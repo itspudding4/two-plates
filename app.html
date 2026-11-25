@@ -1,10 +1,10 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="zh-Hant-TW">
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
-<title>Two Plates (demo)</title>
-<meta name="description" content="Two Plates: a calorie, InBody and sleep tracker for two. Demo with sample data.">
+<title>Two Plates（展示版）</title>
+<meta name="description" content="Two Plates：為朋友們做的熱量、InBody 和睡眠追蹤 App 展示版。A calorie, InBody and sleep tracker for friends. Demo with sample data.">
 <meta name="theme-color" content="#F1F4F0" media="(prefers-color-scheme: light)">
 <meta name="theme-color" content="#0E1411" media="(prefers-color-scheme: dark)">
 <meta name="apple-mobile-web-app-capable" content="yes">
@@ -20,10 +20,14 @@
 <style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style>
 <script>
 /* Two Plates public demo: a stand-in for Claude's database and AI that runs entirely in this browser.
-   The real app runs inside Claude, where data syncs between two phones and Claude reads photos and writes
+   The real app runs inside Claude, where data syncs between everyone's phones and Claude reads photos and writes
    the coaching. Here every "AI" answer is worked out from a small built-in food list and the sample data. */
 (() => {
   "use strict";
+  const LANG = (() => { let l = null; try { const q = new URLSearchParams(location.search).get("lang"); if (q === "en" || q === "zh") { localStorage.setItem("tp.lang", q); l = q; } else l = localStorage.getItem("tp.lang"); } catch { l = null; } return l === "en" ? "en" : "zh"; })();
+  window.TP_LANG = LANG;
+  const ZHU = LANG === "zh";
+  document.documentElement.lang = ZHU ? "zh-Hant-TW" : "en";
   const KEY = "tp.demo.db.v1", META = "tp.demo.meta.v1";
   const DAY = 864e5;
   const store = (() => { try { const k = "__tp_test"; localStorage.setItem(k, "1"); localStorage.removeItem(k); return localStorage; } catch { return null; } })();
@@ -41,34 +45,34 @@
 
   /* ---------- foods (per serving) ---------- */
   const F = {
-    pancake: ["Egg pancake 蛋餅", "1 roll", 255, 9, 30, 11],
-    soy: ["Unsweetened soy milk 無糖豆漿", "1 bottle (400 ml)", 140, 12, 6, 7],
-    teaegg: ["Tea egg 茶葉蛋", "1 egg", 75, 7, 1, 5],
-    yogurt: ["Greek yogurt", "1 cup (150 g)", 130, 15, 7, 4],
-    banana: ["Banana 香蕉", "1 medium", 105, 1, 27, 0],
-    riceball: ["Rice ball 飯糰", "1 roll", 450, 13, 68, 14],
-    sweetpotato: ["Roasted sweet potato 地瓜 (7-Eleven)", "1 medium", 160, 2, 37, 0],
-    latte: ["Latte 拿鐵", "1 large cup", 190, 10, 15, 9],
-    americano: ["Americano 美式咖啡", "1 large cup", 10, 0, 2, 0],
-    sandwich: ["Ham & egg sandwich 火腿蛋三明治", "1 sandwich", 330, 14, 32, 16],
-    bento: ["Chicken leg bento 雞腿便當", "1 box", 820, 42, 95, 28],
-    porkrice: ["Braised pork rice 滷肉飯 (small bowl)", "1 small bowl, about 250 g", 480, 14, 62, 19],
-    beefnoodle: ["Beef noodle soup 牛肉麵", "1 bowl", 650, 38, 75, 20],
-    dumplings: ["Boiled dumplings 水餃", "10 pieces", 520, 22, 60, 20],
-    greens: ["Blanched greens 燙青菜", "1 plate", 90, 3, 8, 5],
-    salad: ["Chicken breast salad", "1 bowl", 380, 35, 20, 17],
-    salmon: ["Salmon, rice and greens (home)", "1 plate", 640, 40, 62, 22],
-    chicken: ["7-Eleven chicken breast 雞胸肉", "1 pack (100 g)", 120, 24, 2, 2],
-    hotpot: ["Hot pot 火鍋 (one person)", "1 set", 900, 50, 70, 45],
-    friedrice: ["Fried rice 炒飯", "1 plate", 700, 20, 90, 26],
-    tofusoup: ["Tofu & egg soup + rice", "1 bowl + ½ bowl rice", 420, 24, 50, 12],
-    shake: ["Protein shake", "1 scoop + water", 120, 24, 3, 1],
-    boba: ["Bubble milk tea 珍珠奶茶 (large, half sugar)", "1 cup (700 ml)", 480, 6, 80, 15],
-    bobasmall: ["Bubble milk tea 珍珠奶茶 (medium, 30% sugar)", "1 cup (500 ml)", 300, 4, 50, 10],
-    saltchicken: ["Salt & pepper chicken 鹽酥雞", "1 bag", 620, 30, 35, 40],
-    guava: ["Guava 芭樂", "1 fruit", 110, 4, 23, 1],
-    gua: ["Gua bao 割包", "1 bun", 340, 12, 38, 15],
-    oatmeal: ["Oatmeal with milk", "1 bowl", 260, 12, 38, 7],
+    pancake: ["Egg pancake 蛋餅", "1 roll", 255, 9, 30, 11, "蛋餅", "1 份"],
+    soy: ["Unsweetened soy milk 無糖豆漿", "1 bottle (400 ml)", 140, 12, 6, 7, "無糖豆漿", "1 瓶（400 ml）"],
+    teaegg: ["Tea egg 茶葉蛋", "1 egg", 75, 7, 1, 5, "茶葉蛋", "1 顆"],
+    yogurt: ["Greek yogurt", "1 cup (150 g)", 130, 15, 7, 4, "希臘優格", "1 杯（150 g）"],
+    banana: ["Banana 香蕉", "1 medium", 105, 1, 27, 0, "香蕉", "1 根"],
+    riceball: ["Rice ball 飯糰", "1 roll", 450, 13, 68, 14, "飯糰", "1 個"],
+    sweetpotato: ["Roasted sweet potato 地瓜 (7-Eleven)", "1 medium", 160, 2, 37, 0, "烤地瓜（7-11）", "1 條"],
+    latte: ["Latte 拿鐵", "1 large cup", 190, 10, 15, 9, "拿鐵", "1 大杯"],
+    americano: ["Americano 美式咖啡", "1 large cup", 10, 0, 2, 0, "美式咖啡", "1 大杯"],
+    sandwich: ["Ham & egg sandwich 火腿蛋三明治", "1 sandwich", 330, 14, 32, 16, "火腿蛋三明治", "1 份"],
+    bento: ["Chicken leg bento 雞腿便當", "1 box", 820, 42, 95, 28, "雞腿便當", "1 個"],
+    porkrice: ["Braised pork rice 滷肉飯 (small bowl)", "1 small bowl, about 250 g", 480, 14, 62, 19, "滷肉飯（小碗）", "1 小碗，約 250 g"],
+    beefnoodle: ["Beef noodle soup 牛肉麵", "1 bowl", 650, 38, 75, 20, "牛肉麵", "1 碗"],
+    dumplings: ["Boiled dumplings 水餃", "10 pieces", 520, 22, 60, 20, "水餃", "10 顆"],
+    greens: ["Blanched greens 燙青菜", "1 plate", 90, 3, 8, 5, "燙青菜", "1 盤"],
+    salad: ["Chicken breast salad", "1 bowl", 380, 35, 20, 17, "雞胸肉沙拉", "1 碗"],
+    salmon: ["Salmon, rice and greens (home)", "1 plate", 640, 40, 62, 22, "鮭魚、白飯和青菜（自己煮）", "1 盤"],
+    chicken: ["7-Eleven chicken breast 雞胸肉", "1 pack (100 g)", 120, 24, 2, 2, "7-11 雞胸肉", "1 包（100 g）"],
+    hotpot: ["Hot pot 火鍋 (one person)", "1 set", 900, 50, 70, 45, "火鍋（單人）", "1 套"],
+    friedrice: ["Fried rice 炒飯", "1 plate", 700, 20, 90, 26, "炒飯", "1 盤"],
+    tofusoup: ["Tofu & egg soup + rice", "1 bowl + ½ bowl rice", 420, 24, 50, 12, "豆腐蛋花湯 + 白飯", "1 碗 + 半碗飯"],
+    shake: ["Protein shake", "1 scoop + water", 120, 24, 3, 1, "高蛋白飲", "1 匙 + 水"],
+    boba: ["Bubble milk tea 珍珠奶茶 (large, half sugar)", "1 cup (700 ml)", 480, 6, 80, 15, "珍珠奶茶（大杯半糖）", "1 杯（700 ml）"],
+    bobasmall: ["Bubble milk tea 珍珠奶茶 (medium, 30% sugar)", "1 cup (500 ml)", 300, 4, 50, 10, "珍珠奶茶（中杯微糖）", "1 杯（500 ml）"],
+    saltchicken: ["Salt & pepper chicken 鹽酥雞", "1 bag", 620, 30, 35, 40, "鹽酥雞", "1 袋"],
+    guava: ["Guava 芭樂", "1 fruit", 110, 4, 23, 1, "芭樂", "1 顆"],
+    gua: ["Gua bao 割包", "1 bun", 340, 12, 38, 15, "割包", "1 個"],
+    oatmeal: ["Oatmeal with milk", "1 bowl", 260, 12, 38, 7, "牛奶燕麥", "1 碗"],
   };
   const entry = (k, t, src, qty = 1) => { const [name, portion, kcal, p, c, f] = F[k]; return { id: "d" + t.toString(36) + k.slice(0, 3), t, name, portion, qty, kcal, p, c, f, src }; };
 
@@ -201,13 +205,13 @@
   }
   const db = { doc, collection: (p) => query(p, []) };
   window.__demoReset = () => {
-    try { if (store) for (const k of Object.keys(store)) if (k.startsWith("tp.") && k !== "tp.demo.welcomed") store.removeItem(k); } catch { /* ignore */ }
+    try { if (store) for (const k of Object.keys(store)) if (k.startsWith("tp.") && k !== "tp.demo.welcomed" && k !== "tp.lang") store.removeItem(k); } catch { /* ignore */ }
     location.reload();
   };
 
   /* ---------- food words → items (used by "Describe it", photo notes and the coach) ---------- */
   const LIB = [
-    [/bubble ?(milk )?tea|boba|pearl milk tea|珍珠奶茶|波霸/, "boba"],
+    [/bubble ?(milk )?tea|boba|pearl milk tea|milk tea|珍珠奶茶|珍奶|波霸|奶茶/, "boba"],
     [/salt (and|&) pepper chicken|popcorn chicken|鹽酥雞/, "saltchicken"],
     [/chicken (leg |thigh )?bento|雞腿便當|bento|便當/, "bento"],
     [/braised pork rice|lu rou fan|滷肉飯/, "porkrice"],
@@ -219,9 +223,9 @@
     [/rice ball|onigiri|飯糰/, "riceball"],
     [/dumplings?|水餃|餃子/, "dumplings"],
     [/fried rice|炒飯/, "friedrice"],
-    [/stinky tofu|臭豆腐/, ["Stinky tofu 臭豆腐", "1 plate", 420, 18, 25, 28]],
-    [/oyster omelet(te)?|蚵仔煎/, ["Oyster omelette 蚵仔煎", "1 plate", 450, 15, 40, 25]],
-    [/scallion pancake|蔥抓餅|蔥油餅/, ["Scallion pancake 蔥抓餅", "1 pancake", 400, 7, 45, 21]],
+    [/stinky tofu|臭豆腐/, ["Stinky tofu 臭豆腐", "1 plate", 420, 18, 25, 28, "臭豆腐", "1 盤"]],
+    [/oyster omelet(te)?|蚵仔煎/, ["Oyster omelette 蚵仔煎", "1 plate", 450, 15, 40, 25, "蚵仔煎", "1 盤"]],
+    [/scallion pancake|蔥抓餅|蔥油餅/, ["Scallion pancake 蔥抓餅", "1 pancake", 400, 7, 45, 21, "蔥抓餅", "1 片"]],
     [/gua ?bao|割包/, "gua"],
     [/hot ?pot|火鍋/, "hotpot"],
     [/sweet potato|地瓜/, "sweetpotato"],
@@ -230,29 +234,29 @@
     [/latte|拿鐵/, "latte"],
     [/americano|black coffee|美式/, "americano"],
     [/coffee|咖啡/, "americano"],
-    [/salmon|鮭魚/, ["Grilled salmon 烤鮭魚", "1 fillet (150 g)", 310, 31, 0, 20]],
+    [/salmon|鮭魚/, ["Grilled salmon 烤鮭魚", "1 fillet (150 g)", 310, 31, 0, 20, "烤鮭魚", "1 片（150 g）"]],
     [/sandwich|三明治/, "sandwich"],
     [/salad|沙拉/, "salad"],
     [/oat(meal|s)|燕麥/, "oatmeal"],
-    [/instant noodles?|ramen|泡麵/, ["Instant noodles 泡麵", "1 pack", 450, 9, 60, 19]],
-    [/noodles?|麵/, ["Noodles with meat sauce 炸醬麵", "1 bowl", 550, 18, 80, 16]],
+    [/instant noodles?|ramen|泡麵/, ["Instant noodles 泡麵", "1 pack", 450, 9, 60, 19, "泡麵", "1 包"]],
+    [/noodles?|麵/, ["Noodles with meat sauce 炸醬麵", "1 bowl", 550, 18, 80, 16, "炸醬麵", "1 碗"]],
     [/greens|vegetables?|veggies|青菜/, "greens"],
     [/guava|芭樂/, "guava"],
     [/banana|香蕉/, "banana"],
-    [/apple|蘋果/, ["Apple 蘋果", "1 medium", 95, 0, 25, 0]],
-    [/pizza/, ["Pizza", "2 slices", 570, 24, 66, 22]],
-    [/burger|漢堡/, ["Burger", "1 burger", 540, 28, 45, 27]],
-    [/fries|薯條/, ["French fries 薯條", "1 medium", 365, 4, 48, 17]],
-    [/beer|啤酒/, ["Beer 啤酒", "1 can (330 ml)", 150, 1, 13, 0]],
-    [/tofu|豆腐/, ["Tofu 豆腐", "1 block (150 g)", 120, 12, 3, 7]],
-    [/(fried |grilled )?chicken|雞/, ["Grilled chicken", "1 piece (150 g)", 250, 40, 0, 9]],
-    [/fish|魚/, ["Grilled fish", "1 fillet (150 g)", 250, 30, 0, 14]],
-    [/eggs?|蛋/, ["Boiled egg 水煮蛋", "1 egg", 75, 6, 1, 5]],
-    [/milk|牛奶/, ["Milk 牛奶", "1 glass (240 ml)", 150, 8, 12, 8]],
-    [/rice|白飯|飯/, ["White rice 白飯", "1 bowl (200 g)", 280, 5, 62, 1]],
+    [/apple|蘋果/, ["Apple 蘋果", "1 medium", 95, 0, 25, 0, "蘋果", "1 顆"]],
+    [/pizza/, ["Pizza", "2 slices", 570, 24, 66, 22, "披薩", "2 片"]],
+    [/burger|漢堡/, ["Burger", "1 burger", 540, 28, 45, 27, "漢堡", "1 個"]],
+    [/fries|薯條/, ["French fries 薯條", "1 medium", 365, 4, 48, 17, "薯條", "1 份（中）"]],
+    [/beer|啤酒/, ["Beer 啤酒", "1 can (330 ml)", 150, 1, 13, 0, "啤酒", "1 罐（330 ml）"]],
+    [/tofu|豆腐/, ["Tofu 豆腐", "1 block (150 g)", 120, 12, 3, 7, "豆腐", "1 塊（150 g）"]],
+    [/(fried |grilled )?chicken|雞/, ["Grilled chicken", "1 piece (150 g)", 250, 40, 0, 9, "烤雞肉", "1 塊（150 g）"]],
+    [/fish|魚/, ["Grilled fish", "1 fillet (150 g)", 250, 30, 0, 14, "烤魚", "1 片（150 g）"]],
+    [/eggs?|蛋/, ["Boiled egg 水煮蛋", "1 egg", 75, 6, 1, 5, "水煮蛋", "1 顆"]],
+    [/milk|牛奶/, ["Milk 牛奶", "1 glass (240 ml)", 150, 8, 12, 8, "牛奶", "1 杯（240 ml）"]],
+    [/rice|白飯|飯/, ["White rice 白飯", "1 bowl (200 g)", 280, 5, 62, 1, "白飯", "1 碗（200 g）"]],
   ];
   const WORDNUM = { a: 1, an: 1, one: 1, two: 2, three: 3, four: 4, five: 5, half: 0.5, "一": 1, "兩": 2, "二": 2, "三": 3, "半": 0.5 };
-  function foodsIn(text) {
+  function foodsIn(text, zhNames = ZHU) {
     const s = " " + String(text || "").toLowerCase() + " ";
     const used = new Array(s.length).fill(false);
     const out = [];
@@ -268,8 +272,8 @@
         let qty = 1;
         if (q) qty = WORDNUM[q[1]] ?? (parseFloat(q[1]) || 1);
         if (qty > 20) qty = 1;
-        const [name, portion, kcal, protein, carbs, fat] = typeof def === "string" ? F[def] : def;
-        out.push({ name, portion, qty, kcal, protein, carbs, fat, at: a });
+        const [name, portion, kcal, protein, carbs, fat, zn, zp] = typeof def === "string" ? F[def] : def;
+        out.push({ name: zhNames && zn ? zn : name, portion: zhNames && zp ? zp : portion, qty, kcal, protein, carbs, fat, at: a });
       }
     }
     return out.sort((x, y) => x.at - y.at).map(({ at: _, ...x }) => x);
@@ -284,23 +288,28 @@
   const nums = (s) => Number(String(s).replace(/,/g, "").replace(/\u2212/g, "-"));
   const grab = (re, s, i = 1) => { const m = re.exec(s); return m ? m[i] : null; };
   let photoTurn = 0;
-  const PHOTO_MEALS = [
+  const PHOTO_MEALS = ZHU ? [
+    [["雞腿便當", "1 個：雞腿、白飯、三樣配菜", 820, 42, 95, 28, "medium"]],
+    [["牛肉麵", "1 大碗", 650, 38, 75, 20, "medium"], ["燙青菜", "1 小盤", 90, 3, 8, 5, "high"]],
+    [["蛋餅", "1 份", 255, 9, 30, 11, "high"], ["無糖豆漿", "1 杯（400 ml）", 140, 12, 6, 7, "medium"]],
+  ] : [
     [["Chicken leg bento 雞腿便當", "1 box: drumstick, rice, 3 sides", 820, 42, 95, 28, "medium"]],
     [["Beef noodle soup 牛肉麵", "1 large bowl", 650, 38, 75, 20, "medium"], ["Blanched greens 燙青菜", "1 small plate", 90, 3, 8, 5, "high"]],
     [["Egg pancake 蛋餅", "1 roll", 255, 9, 30, 11, "high"], ["Unsweetened soy milk 無糖豆漿", "1 cup (400 ml)", 140, 12, 6, 7, "medium"]],
   ];
+  const L = (en, zh) => (ZHU ? zh : en);
   function photoAnswer(prompt) {
     const note = grab(/takes priority over what you see: "([\s\S]*?)"\n/, prompt);
     const fromNote = note ? foodsIn(note) : [];
-    if (fromNote.length) return { items: fromNote.map((x) => ({ ...x, confidence: "medium" })), note: "Demo: these come from your note and a built-in food list. In the real app, Claude looks at the photo itself." };
+    if (fromNote.length) return { items: fromNote.map((x) => ({ ...x, confidence: "medium" })), note: L("Demo: these come from your note and a built-in food list. In the real app, Claude looks at the photo itself.", "展示版：根據你的備註和內建食物清單估算。真正的 App 會由 Claude 直接看照片。") };
     const meal = PHOTO_MEALS[photoTurn++ % PHOTO_MEALS.length];
-    return { items: meal.map(([name, portion, kcal, protein, carbs, fat, confidence]) => ({ name, portion, kcal, protein, carbs, fat, confidence })), note: "Demo: this is a sample result, not a reading of your photo. In the real app, Claude estimates what's actually on the plate. Tip: type what's in the photo in the note box and the demo will use that." };
+    return { items: meal.map(([name, portion, kcal, protein, carbs, fat, confidence]) => ({ name, portion, kcal, protein, carbs, fat, confidence })), note: L("Demo: this is a sample result, not a reading of your photo. In the real app, Claude estimates what's actually on the plate. Tip: type what's in the photo in the note box and the demo will use that.", "展示版：這是範例結果，不是真的讀取你的照片。真正的 App 會由 Claude 估計盤子裡實際的食物。小技巧：在備註欄寫下照片裡有什麼，展示版就會用它來估算。") };
   }
   function describeAnswer(prompt) {
     const text = grab(/"""([\s\S]*?)"""/, prompt) || "";
     const items = foodsIn(text);
-    if (items.length) return { items: items.map((x) => ({ ...x, portion: x.qty !== 1 ? `${x.portion} × ${x.qty}` : x.portion, kcal: Math.round(x.kcal * x.qty / 5) * 5, protein: Math.round(x.protein * x.qty), carbs: Math.round(x.carbs * x.qty), fat: Math.round(x.fat * x.qty), confidence: "medium" })), note: "Demo: estimated from a built-in list of common foods. The real app asks Claude, which understands any description." };
-    return { items: [{ name: text.trim().slice(0, 60) || "Meal", portion: "1 typical serving (rough guess)", kcal: 500, protein: 20, carbs: 60, fat: 18, confidence: "low" }], note: "Demo: this sample version only knows common foods (bento, beef noodles, bubble tea, tea eggs, soy milk…), so this is a placeholder. The real app asks Claude, which understands any description." };
+    if (items.length) return { items: items.map((x) => ({ ...x, portion: x.qty !== 1 ? `${x.portion} × ${x.qty}` : x.portion, kcal: Math.round(x.kcal * x.qty / 5) * 5, protein: Math.round(x.protein * x.qty), carbs: Math.round(x.carbs * x.qty), fat: Math.round(x.fat * x.qty), confidence: "medium" })), note: L("Demo: estimated from a built-in list of common foods. The real app asks Claude, which understands any description.", "展示版：根據內建的常見食物清單估算。真正的 App 由 Claude 估算，什麼描述都看得懂。") };
+    return { items: [{ name: text.trim().slice(0, 60) || L("Meal", "一餐"), portion: L("1 typical serving (rough guess)", "一般份量（粗估）"), kcal: 500, protein: 20, carbs: 60, fat: 18, confidence: "low" }], note: L("Demo: this sample version only knows common foods (bento, beef noodles, bubble tea, tea eggs, soy milk…), so this is a placeholder. The real app asks Claude, which understands any description.", "展示版只認得常見食物（便當、牛肉麵、珍奶、茶葉蛋、豆漿…），所以這是暫定的數字。真正的 App 由 Claude 估算，什麼描述都看得懂。") };
   }
   function inbodyAnswer() {
     let pid = null;
@@ -311,30 +320,31 @@
     return { date: ymd(new Date()), weight: w, smm, bfm, pbf: r1(bfm / w * 100), ffm: r1(w - bfm), visceral: last.visceral ?? null, bmr: (last.bmr || 1500) + 3, score: (last.score || 75) + 1 };
   }
   const IDEAS = [
-    ["7-Eleven chicken breast + unsweetened soy milk", "7-11 雞胸肉 + 無糖豆漿", "1 pack (100 g) + 1 bottle (400 ml)", 260, 36, 8, 9],
-    ["Greek yogurt + banana", "希臘優格 + 香蕉", "1 cup (150 g) + 1 medium", 235, 16, 34, 4],
-    ["2 tea eggs + roasted sweet potato", "兩顆茶葉蛋 + 烤地瓜", "2 eggs + 1 medium", 310, 16, 39, 10],
-    ["Protein shake + guava", "高蛋白飲 + 芭樂", "1 scoop + 1 fruit", 230, 28, 26, 2],
-    ["Tofu & egg soup with half a bowl of rice", "豆腐蛋花湯 + 半碗飯", "1 bowl", 420, 24, 50, 12],
-    ["Small beef noodle soup, extra greens", "小碗牛肉麵，多加青菜", "1 small bowl", 480, 30, 52, 15],
-    ["Salmon, rice and greens", "鮭魚、白飯和青菜", "1 fillet + ½ bowl rice + greens", 590, 37, 40, 26],
-    ["Chicken leg bento, half the rice", "雞腿便當，飯吃一半", "1 box", 650, 40, 60, 26],
-  ].map(([title, zh, detail, kcal, protein, carbs, fat]) => ({ title, zh, detail, kcal, protein, carbs, fat }));
+    ["7-Eleven chicken breast + unsweetened soy milk", "7-11 雞胸肉 + 無糖豆漿", "1 pack (100 g) + 1 bottle (400 ml)", "1 包（100 g）+ 1 瓶（400 ml）", 260, 36, 8, 9],
+    ["Greek yogurt + banana", "希臘優格 + 香蕉", "1 cup (150 g) + 1 medium", "1 杯（150 g）+ 1 根", 235, 16, 34, 4],
+    ["2 tea eggs + roasted sweet potato", "兩顆茶葉蛋 + 烤地瓜", "2 eggs + 1 medium", "2 顆 + 1 條", 310, 16, 39, 10],
+    ["Protein shake + guava", "高蛋白飲 + 芭樂", "1 scoop + 1 fruit", "1 匙 + 1 顆", 230, 28, 26, 2],
+    ["Tofu & egg soup with half a bowl of rice", "豆腐蛋花湯 + 半碗飯", "1 bowl", "1 碗", 420, 24, 50, 12],
+    ["Small beef noodle soup, extra greens", "小碗牛肉麵，多加青菜", "1 small bowl", "1 小碗", 480, 30, 52, 15],
+    ["Salmon, rice and greens", "鮭魚、白飯和青菜", "1 fillet + ½ bowl rice + greens", "1 片 + 半碗飯 + 青菜", 590, 37, 40, 26],
+    ["Chicken leg bento, half the rice", "雞腿便當，飯吃一半", "1 box", "1 個", 650, 40, 60, 26],
+  ].map(([title, zh, detail, zhDetail, kcal, protein, carbs, fat]) => ({ title, zh, detail, zhDetail, kcal, protein, carbs, fat }));
   function ideasFor(kLeft, avoid) {
-    const fit = IDEAS.filter((x) => x.kcal <= kLeft && !(avoid || "").includes(x.title)).sort((a, b) => b.protein / b.kcal - a.protein / a.kcal);
+    const fit = IDEAS.filter((x) => x.kcal <= kLeft && !(avoid || "").includes(x.title) && !(avoid || "").includes(x.zh)).sort((a, b) => b.protein / b.kcal - a.protein / a.kcal);
     const out = fit.slice(0, 3);
     for (const x of IDEAS.slice().sort((a, b) => a.kcal - b.kcal)) { if (out.length >= 3) break; if (!out.includes(x)) out.push(x); }
     return out;
   }
   const FIX = [
-    [/weekend/i, "Plan weekend dinners like weekday ones and pick one treat ahead of time"],
-    [/late-night|after 9/i, "Close the kitchen at 9 pm; if you're hungry, have a tea egg or a soy milk"],
-    [/protein/i, "Add a protein food to every meal: eggs, tofu, chicken breast or soy milk"],
-    [/drink/i, "Order bubble tea at 30% sugar (微糖) or a medium size, and not after dinner"],
-    [/sleep|bed/i, "Set a wind-down alarm 30 minutes before your bedtime target"],
-    [/above target|over/i, "Log meals before you eat them, so you can adjust the rest of the day"],
-    [/logged/i, "Log every day this week, even the off-plan days"],
+    [/weekend/i, "Plan weekend dinners like weekday ones and pick one treat ahead of time", "週末晚餐跟平日一樣，點心事先規劃一個就好"],
+    [/late-night|after 9/i, "Close the kitchen at 9 pm; if you're hungry, have a tea egg or a soy milk", "晚上 9 點後不吃東西；真的餓就吃茶葉蛋或喝豆漿"],
+    [/protein/i, "Add a protein food to every meal: eggs, tofu, chicken breast or soy milk", "每一餐都加一份蛋白質：蛋、豆腐、雞胸肉或豆漿"],
+    [/drink/i, "Order bubble tea at 30% sugar (微糖) or a medium size, and not after dinner", "珍奶改成微糖或中杯，而且不要在晚餐後喝"],
+    [/sleep|bed/i, "Set a wind-down alarm 30 minutes before your bedtime target", "在就寢目標前 30 分鐘設一個準備睡覺的鬧鐘"],
+    [/above target|over/i, "Log meals before you eat them, so you can adjust the rest of the day", "吃之前先記錄，才能調整當天剩下的餐"],
+    [/logged/i, "Log every day this week, even the off-plan days", "這週每天都記錄，吃多的日子也一樣"],
   ];
+  const tz = (s) => { try { return window.__tr ? window.__tr(s) : s; } catch { return s; } };
   function reviewAnswer(prompt) {
     const t = /Targets: (\d+) kcal, protein (\d+) g, carbs (\d+) g, fat (\d+) g/.exec(prompt) || [0, 2000, 120, 220, 60];
     const ch = /Change over (\d+) days: weight (\S+) kg, body fat (\S+) kg, skeletal muscle (\S+) kg/.exec(prompt);
@@ -344,24 +354,36 @@
     const fN = Number.isFinite(dF) ? dF : 0, mN = Number.isFinite(dM) ? dM : 0;
     const verdict = fN <= -0.2 && mN > -0.3 ? "better" : fN >= 0.2 || mN < -0.3 ? "worse" : "same";
     const f1 = (n) => Math.abs(n).toFixed(1);
-    const headline = verdict === "better" ? `Fat down ${f1(fN)} kg, muscle ${mN > 0.05 ? `up ${f1(mN)} kg` : "holding"}` : verdict === "worse" ? (fN >= 0.2 ? `Fat up ${f1(fN)} kg: here's what changed` : "Muscle dipped: time to eat a bit more protein") : "About the same as last time";
-    const story = `Over ${days} days, body fat ${fN < 0 ? "went down" : fN > 0 ? "went up" : "stayed"} ${fN ? f1(fN) + " kg" : ""} and muscle ${mN >= 0 ? "changed by +" : "changed by −"}${f1(mN)} kg. ${flags.length ? `The biggest thing in your log: ${flags[0].t.charAt(0).toLowerCase() + flags[0].t.slice(1)}.` : "Your food and sleep were on track, so small swings are likely water, salt or test timing."} InBody readings move with water and food, so watch the trend over a few tests.`;
+    const headline = ZHU
+      ? (verdict === "better" ? `體脂少了 ${f1(fN)} kg，肌肉${mN > 0.05 ? `多了 ${f1(mN)} kg` : "維持住"}` : verdict === "worse" ? (fN >= 0.2 ? `體脂多了 ${f1(fN)} kg：來看看哪裡不一樣` : "肌肉掉了：該多吃點蛋白質") : "跟上次差不多")
+      : (verdict === "better" ? `Fat down ${f1(fN)} kg, muscle ${mN > 0.05 ? `up ${f1(mN)} kg` : "holding"}` : verdict === "worse" ? (fN >= 0.2 ? `Fat up ${f1(fN)} kg: here's what changed` : "Muscle dipped: time to eat a bit more protein") : "About the same as last time");
+    const story = ZHU
+      ? `這 ${days} 天，體脂${fN < 0 ? "減少" : fN > 0 ? "增加" : "沒變"}${fN ? ` ${f1(fN)} kg` : ""}，肌肉${mN >= 0 ? "增加" : "減少"} ${f1(mN)} kg。${flags.length ? `紀錄裡最明顯的是：${tz(flags[0].t)}。` : "飲食和睡眠都在軌道上，小幅變動多半是水分、鹽分或測量時間造成的。"}InBody 會隨水分和飲食變動，看幾次的趨勢比較準。`
+      : `Over ${days} days, body fat ${fN < 0 ? "went down" : fN > 0 ? "went up" : "stayed"} ${fN ? f1(fN) + " kg" : ""} and muscle ${mN >= 0 ? "changed by +" : "changed by −"}${f1(mN)} kg. ${flags.length ? `The biggest thing in your log: ${flags[0].t.charAt(0).toLowerCase() + flags[0].t.slice(1)}.` : "Your food and sleep were on track, so small swings are likely water, salt or test timing."} InBody readings move with water and food, so watch the trend over a few tests.`;
     const tips = [];
-    for (const f of flags) for (const [re, tip] of FIX) if (re.test(f.t) && !tips.includes(tip)) { tips.push(tip); break; }
-    for (const tip of ["Test at the same time of day before eating for the next InBody", "Keep lifting 3 times a week with a little more weight each week", "Keep protein high on rest days too"]) if (tips.length < 3) tips.push(tip);
+    for (const f of flags) for (const [re, en, zh] of FIX) { const tip = ZHU ? zh : en; if (re.test(f.t) && !tips.includes(tip)) { tips.push(tip); break; } }
+    const more = ZHU ? ["下次 InBody 在同樣時間、吃東西前測量", "每週重訓 3 次，每週稍微加一點重量", "休息日也要維持高蛋白"] : ["Test at the same time of day before eating for the next InBody", "Keep lifting 3 times a week with a little more weight each week", "Keep protein high on rest days too"];
+    for (const tip of more) if (tips.length < 3) tips.push(tip);
     const kcal = verdict === "worse" && !flags.some((f) => /above target/i.test(f.t)) ? nums(t[1]) - 100 : nums(t[1]);
     return {
       headline, verdict, story,
       causes: flags.slice(0, 3).map((f, i) => ({ title: f.t.slice(0, 80), evidence: f.d, impact: i === 0 && verdict !== "better" ? "high" : "medium" })),
-      worked: verdict === "better" ? ["Fat came down while muscle held", "You logged most days, so this review is based on real data"] : ["You kept logging, so it's clear what to change"],
+      worked: verdict === "better" ? (ZHU ? ["體脂下降、肌肉也維持住", "大部分天數都有記錄，這次分析有真實資料可依據"] : ["Fat came down while muscle held", "You logged most days, so this review is based on real data"]) : (ZHU ? ["你有持續記錄，所以很清楚要改什麼"] : ["You kept logging, so it's clear what to change"]),
       fixes: tips.slice(0, 3), kcal, protein: nums(t[2]), carbs: nums(t[3]), fat: nums(t[4]),
-      watch: "Whether fat keeps dropping while skeletal muscle holds or rises.",
+      watch: ZHU ? "體脂是否持續下降，同時骨骼肌維持或上升。" : "Whether fat keeps dropping while skeletal muscle holds or rises.",
     };
   }
   function planAnswer(prompt) {
     const t = /Current daily targets: (\d+) kcal, (\d+) g protein, (\d+) g carbs, (\d+) g fat/.exec(prompt) || [0, 2000, 120, 220, 60];
     const title = grab(/rule-based read of the last two check-ins: "([^"]*)"/, prompt) || "";
-    return {
+    const titleZ = title && title !== "baseline only" ? tz(title) : "";
+    return ZHU ? {
+      headline: titleZ ? `${titleZ}：繼續保持` : "這週的計畫",
+      assessment: `App 比較你最近兩次 InBody 的結果是「${titleZ || "只有基準值"}」。你的飲食紀錄接近目標，所以這個計畫維持熱量不變，重點放在穩定執行。`,
+      kcal: nums(t[1]), protein: nums(t[2]), carbs: nums(t[3]), fat: nums(t[4]),
+      tips: ["這週至少 5 天達到蛋白質目標", "週末晚餐跟平日差不多", "這週有 5 個晚上在就寢目標前上床"],
+      watch: "體脂應該持續下降，同時骨骼肌維持住。",
+    } : {
       headline: title && title !== "baseline only" ? `${title}: keep going` : "Your plan for this week",
       assessment: `The app's comparison of your last two InBody tests says "${title || "baseline only"}". Your food log is close to target, so the plan keeps calories the same and focuses on consistency.`,
       kcal: nums(t[1]), protein: nums(t[2]), carbs: nums(t[3]), fat: nums(t[4]),
@@ -374,11 +396,11 @@
     await wait(900 + Math.random() * 700, opts.signal);
     if (/Look at this photo of food/.test(p)) return photoAnswer(p);
     if (/The person described what they ate/.test(p)) return describeAnswer(p);
-    if (/Read the nutrition label/.test(p)) return { found: true, name: "Sample product (demo label read)", serving: "1 bottle (400 ml)", kcal: 140, protein: 12, carbs: 6, fat: 7, barcode: "" };
+    if (/Read the nutrition label/.test(p)) return { found: true, name: L("Sample product (demo label read)", "範例商品（展示版讀取的標示）"), serving: L("1 bottle (400 ml)", "1 瓶（400 ml）"), kcal: 140, protein: 12, carbs: 6, fat: 7, barcode: "" };
     if (/Read the barcode number/.test(p)) return { barcode: "" };
     if (/InBody body composition result sheet/.test(p)) return inbodyAnswer();
     if (/sleep-tracking app/.test(p)) return { found: true, bed: "23:35", wake: "07:10", minutes: 440 };
-    if (/Suggest 3 different, simple options/.test(p)) { const k = nums(grab(/has (-?\d+) kcal/, p) || 500); return ideasFor(k, grab(/Avoid repeating these: (.*)\./, p)).map(({ zh: _z, ...x }) => x); }
+    if (/Suggest 3 different, simple options/.test(p)) { const k = nums(grab(/has (-?\d+) kcal/, p) || 500); return ideasFor(k, grab(/Avoid repeating these: (.*)\./, p)).map((x) => ({ title: ZHU ? x.zh : x.title, detail: ZHU ? x.zhDetail : x.detail, kcal: x.kcal, protein: x.protein, carbs: x.carbs, fat: x.fat })); }
     if (/explain what most likely made this InBody result/.test(p)) return reviewAnswer(p);
     if (/Write next week's plan/.test(p)) return planAnswer(p);
     throw { code: "invalid_json", message: "demo has no answer for this" };
@@ -414,30 +436,31 @@
     const D = readData(ctx);
     const zh = /[一-鿿]/.test(msg) && !/[a-z]{4,}/i.test(msg);
     const T = (en, zhText) => (zh ? zhText : en);
+    const AP = ZHU ? "套用" : "Apply";
     const act = (a) => `\n<actions>\n${JSON.stringify(a)}\n</actions>`;
     const leftLine = (k, p) => (k >= 0
       ? (p > 0 ? T(`you'd have ${fmtN(k)} kcal and ${fmtN(p)} g protein left today`, `今天還剩 ${fmtN(k)} 大卡、蛋白質 ${fmtN(p)} g`) : T(`you'd have ${fmtN(k)} kcal left today and you'd reach your protein goal`, `今天還剩 ${fmtN(k)} 大卡，蛋白質也達標了`))
       : T(`you'd be ${fmtN(-k)} kcal over today's target`, `今天會超過目標 ${fmtN(-k)} 大卡`));
     if (opts && opts.images && opts.images.length) {
-      const it = { name: "Chicken leg bento 雞腿便當", portion: "1 box", qty: 1, kcal: 820, protein: 42, carbs: 95, fat: 28 };
+      const it = { name: zh || ZHU ? "雞腿便當" : "Chicken leg bento 雞腿便當", portion: zh || ZHU ? "1 個" : "1 box", qty: 1, kcal: 820, protein: 42, carbs: 95, fat: 28 };
       return T(`This is the demo, so I can't really see your photo. Here's a sample answer: it looks like a **chicken leg bento**, about **820 kcal** and 42 g protein. After it, ${leftLine(D.leftK - 820, D.leftP - 42)}.\n\nTap Apply to log it.`,
-        `這是展示版，所以我其實看不到你的照片。範例回答：看起來像**雞腿便當**，大約 **820 大卡**、蛋白質 42 g。吃完後${leftLine(D.leftK - 820, D.leftP - 42)}。\n\n按 Apply 就會記錄。`) + act([{ type: "add_food", items: [it] }]);
+        `這是展示版，所以我其實看不到你的照片。範例回答：看起來像**雞腿便當**，大約 **820 大卡**、蛋白質 42 g。吃完後${leftLine(D.leftK - 820, D.leftP - 42)}。\n\n按「${AP}」就會記錄。`) + act([{ type: "add_food", items: [it] }]);
     }
     let time = null;
     const t1 = /(\d{1,2})[:.](\d{2})/.exec(q), t2 = /(\d{1,2})\s*(pm|am)\b/.exec(q);
     if (t1 && Number(t1[1]) < 24 && Number(t1[2]) < 60) time = [t1[1], t1[2]];
     else if (t2) time = [String((Number(t2[1]) % 12) + (t2[2] === "pm" ? 12 : 0)), "00"];
-    if (/bed ?time|go to bed|sleep goal|bedtime|睡/.test(q) && time) {
+    if (/bed ?time|go to bed|sleep goal|bedtime|睡|就寢/.test(q) && time) {
       const bt = `${String(time[0]).padStart(2, "0")}:${time[1]}`;
       return T(`Good idea. Going from **${D.bed || "23:30"}** to **${bt}** gives you more room to reach your ${D.goal || "7 h 30 m"} sleep goal, and better sleep makes it easier to hold on to muscle while you're eating less.\n\nTap Apply to change your bedtime target. The app will warn you on nights you're more than 30 minutes late.`,
-        `好主意。把就寢目標從 **${D.bed || "23:30"}** 改成 **${bt}**，比較容易睡滿 ${D.goal || "7 h 30 m"}，睡得好也比較能在少吃的時候保住肌肉。\n\n按 Apply 更新就寢目標。晚了超過 30 分鐘，App 會提醒你。`) + act([{ type: "sleep_goals", bedtime: bt }]);
+        `好主意。把就寢目標從 **${D.bed || "23:30"}** 改成 **${bt}**，比較容易睡滿 ${D.goal || "7 h 30 m"}，睡得好也比較能在少吃的時候保住肌肉。\n\n按「${AP}」更新就寢目標。晚了超過 30 分鐘，App 會提醒你。`) + act([{ type: "sleep_goals", bedtime: bt }]);
     }
-    const foods = foodsIn(msg);
+    const foods = foodsIn(msg, zh || ZHU);
     if (foods.length && (/\b(had|ate|eat|eaten|eating|drank|drink|log|just)\b|吃|喝|記/.test(q) || foods.length >= 2)) {
       const tot = totalOf(foods);
-      const list = foods.map((f) => `- ${f.qty !== 1 ? f.qty + " × " : ""}${f.name}: ${T("about", "約")} ${fmtN(f.kcal * f.qty)} ${T("kcal", "大卡")}${T(", ", "、")}${T("", "蛋白質 ")}${fmtN(f.protein * f.qty)} g${T(" protein", "")}`).join("\n");
+      const list = foods.map((f) => `- ${f.qty !== 1 ? f.qty + " × " : ""}${f.name}${T(": ", "：")}${T("about", "約")} ${fmtN(f.kcal * f.qty)} ${T("kcal", "大卡")}${T(", ", "、")}${T("", "蛋白質 ")}${fmtN(f.protein * f.qty)} g${T(" protein", "")}`).join("\n");
       return T(`${tot.p >= 25 ? "Nice, that's a good amount of protein." : "Got it."} Here's my estimate:\n${list}\n\nThat's **${fmtN(tot.k)} kcal** and **${fmtN(tot.p)} g protein**. After this ${leftLine(D.leftK - tot.k, D.leftP - tot.p)}.\n\nTap Apply to log it.`,
-        `${tot.p >= 25 ? "不錯，蛋白質很夠。" : "收到。"}我的估計：\n${list}\n\n總共 **${fmtN(tot.k)} 大卡**、蛋白質 **${fmtN(tot.p)} g**。吃完後${leftLine(D.leftK - tot.k, D.leftP - tot.p)}。\n\n按 Apply 就會記錄。`)
+        `${tot.p >= 25 ? "不錯，蛋白質很夠。" : "收到。"}我的估計：\n${list}\n\n總共 **${fmtN(tot.k)} 大卡**、蛋白質 **${fmtN(tot.p)} g**。吃完後${leftLine(D.leftK - tot.k, D.leftP - tot.p)}。\n\n按「${AP}」就會記錄。`)
         + act([{ type: "add_food", items: foods.map(({ name, portion, qty, kcal, protein, carbs, fat }) => ({ name, portion, qty, kcal, protein, carbs, fat })) }]);
     }
     if (/how am i doing|this week|my week|progress|so far|本週|這週|這禮拜|最近|進度/.test(q)) {
@@ -481,7 +504,7 @@
     const w = /(\d{2,3}(?:\.\d)?)\s*(kg|公斤)/.exec(q);
     if (w && /weigh|weight|體重|公斤/.test(q)) {
       return T(`Thanks! Tap Apply to save **${w[1]} kg** as a check-in for today. If you have an InBody result, add the photo from Progress and you'll get the full fat and muscle breakdown.`,
-        `謝謝！按 Apply 就會把 **${w[1]} kg** 存成今天的紀錄。如果有 InBody 結果，從 Progress 加照片就能看到完整的體脂和肌肉分析。`) + act([{ type: "add_checkin", weight: Number(w[1]) }]);
+        `謝謝！按「${AP}」就會把 **${w[1]} kg** 存成今天的紀錄。如果有 InBody 結果，從「${ZHU ? "進度" : "Progress"}」加照片就能看到完整的體脂和肌肉分析。`) + act([{ type: "add_checkin", weight: Number(w[1]) }]);
     }
     return T(`This is the demo version, so my answers come from a small set of examples rather than Claude. Try one of these:\n- Ask how many calories you should eat\n- Ask "How am I doing this week?"\n- Tell me what you ate, like "2 tea eggs and a soy milk", and I'll log it\n- Ask what to eat with what's left today\n- Ask to change your bedtime goal to 23:00\n\nIn the real app, Claude answers anything about food, training and sleep using your own data.`,
       `這是展示版，所以回答是事先寫好的範例，不是 Claude 即時產生的。你可以試試：\n- 問「我應該吃多少熱量？」\n- 問「我這週表現如何？」\n- 說「我吃了兩顆茶葉蛋和一杯豆漿」，我幫你記錄\n- 問「我還能吃什麼？」\n- 說「把睡覺時間改成 23:00」\n\n在真正的 App 裡，Claude 會用你自己的資料回答任何飲食、訓練和睡眠的問題。`);
@@ -504,7 +527,8 @@
 
   const user = { id: async () => "demo-visitor", can: async () => true, isOwner: () => true, canEdit: () => true, me: async () => ({ id: "demo-visitor" }), profiles: async () => ({}) };
   window.claude = { use: async (n) => (n === "db" ? db : n === "user" ? user : n === "sample" ? sample : null) };
-  window.__demo = { foodsIn, data: () => data };
+  const FOODS = [...Object.values(F), ...LIB.map(([, d]) => d).filter((d) => typeof d !== "string")].map(([en, enP, , , , , zh, zhP]) => ({ en, enP, zh, zhP }));
+  window.__demo = { foodsIn, foods: FOODS, data: () => data };
 })();
 </script>
 </head>
@@ -1850,11 +1874,11 @@ function viewProfile() {
     <button class="btn sm ghost" style="align-self:flex-start" data-act="sleep-setup">${ic("moon", "sm")}${p.sleepVia ? "Setup guide" : "Set up automatic sleep"}</button></section>`;
   h += `<div class="section-title"><h2>People</h2></div><div class="list">${S.people.map((x) => `<button class="row" data-act="view" data-pid="${esc(x.id)}">${avatar(x)}<span class="r-main"><span class="r-title">${esc(x.name)}</span><span class="r-sub">${fmt(targetsFor(x).kcal)} kcal · ${fmt(targetsFor(x).protein)} g protein</span></span>${x.id === S.me ? '<span class="tag accent">This phone</span>' : ""}</button>`).join("")}
     <button class="row" data-act="onboard"><span class="thumb" style="width:24px;height:24px;background:none">${ic("users", "sm")}</span><span class="r-main"><span class="r-title">Change who's using this phone</span></span>${ic("chev", "sm")}</button></div>`;
-  h += `<div class="section-title"><h2>Set up your partner</h2></div><section class="card"><ol class="steps">
-    <li>In Claude, open Two Plates and tap <b>Share</b>. Invite your partner's email as an <b>Editor</b> so she can save her meals. Keep public link sharing off.</li>
-    <li>On her iPhone, open the invite link in <b>Safari</b> and sign in to Claude (a free account works).</li>
+  h += `<div class="section-title"><h2>Add a friend</h2></div><section class="card"><ol class="steps">
+    <li>In Claude, open Two Plates and tap <b>Share</b>. Invite your friend's email as an <b>Editor</b> so they can save their meals. Keep public link sharing off.</li>
+    <li>On their iPhone, open the invite link in <b>Safari</b> and sign in to Claude (a free account works).</li>
     <li>Tap the <b>Share</b> button, then <b>Add to Home Screen</b>. Do the same on your phone.</li>
-    <li>Open the app, tap <b>Change who's using this phone</b>, then <b>I'm new here</b> to make her profile.</li>
+    <li>Open the app, tap <b>Change who's using this phone</b>, then <b>I'm new here</b> to make their profile.</li>
   </ol></section>`;
   h += `<section class="card"><dl class="kv">
     <dt>Sync</dt><dd>${S.mode === "cloud" ? "Demo: this browser only" : "This phone only"}</dd>
@@ -4248,33 +4272,529 @@ boot();
 @media (prefers-reduced-motion: reduce){.demo-ov,.demo-card{animation:none}}
 @media (max-width:400px){.top{gap:6px}.brand{font-size:17px;gap:5px}.brand-mark{width:19px;height:19px}.demo-chip{font-size:10px;padding:3px 5px;min-height:18px;margin-left:0}.who button{padding:4px 9px 4px 4px;gap:5px}}
 .demo-card:focus{outline:none}
+.demo-head .tp-langseg{margin-left:auto}
+.tp-langseg{display:inline-flex;min-width:0}
+.tp-langseg button{flex:none;min-height:34px;padding:0 12px}
 </style>
 <script>
-/* Two Plates public demo: "Demo" badge in the header and a welcome card on the first visit. */
+/* Two Plates public demo: Traditional Chinese (default) or English, switchable.
+   The app's own code is English; this layer translates what's on screen as it renders, so the real app stays unchanged.
+   Chat bubbles, typed values and codes are never touched. */
 (() => {
   "use strict";
+  const LANG = window.TP_LANG === "en" ? "en" : "zh";
+  const ZH = LANG === "zh";
+  document.documentElement.lang = ZH ? "zh-Hant-TW" : "en";
+
+  /* ---------- switching ---------- */
+  function setLang(l) {
+    try { localStorage.setItem("tp.lang", l); } catch { /* storage off */ }
+    try { if (window.parent !== window && window.parent.__tpSetLang) { window.parent.__tpSetLang(l); return; } } catch { /* other origin */ }
+    const u = new URL(location.href); u.searchParams.delete("lang"); location.replace(u.toString());
+  }
+  window.__tpSetLang = setLang;
+  document.addEventListener("click", (e) => { const b = e.target.closest("[data-tplang]"); if (b && b.dataset.tplang !== LANG) setLang(b.dataset.tplang); });
+  const langSeg = () => `<div class="seg tp-langseg" role="group" aria-label="Language / 語言"><button type="button" data-tplang="zh" aria-pressed="${ZH}">中文</button><button type="button" data-tplang="en" aria-pressed="${!ZH}">English</button></div>`;
+  window.__tpLangSeg = langSeg;
+
+  /* ---------- food names (both directions) ---------- */
+  const FOOD = new Map();
+  const norm = (n) => String(n || "").replace(/\s*[（(].*?[)）]\s*/g, " ").replace(/\s+/g, " ").trim();
+  {
+    const clash = new Set();
+    for (const f of (window.__demo && window.__demo.foods) || []) {
+      for (const [en, zh] of [[f.en, f.zh], [f.enP, f.zhP], [norm(f.en), norm(f.zh)]]) {
+        if (!en || !zh) continue;
+        const [k, v] = ZH ? [en, zh] : [zh, en];
+        if (FOOD.has(k) && FOOD.get(k) !== v) clash.add(k); else FOOD.set(k, v);
+      }
+    }
+    for (const k of clash) FOOD.delete(k); // same words, different foods: use the general wording below
+  }
+
+  /* ---------- helpers ---------- */
+  const MON = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
+  const WK = { Sun: "日", Mon: "一", Tue: "二", Wed: "三", Thu: "四", Fri: "五", Sat: "六" };
+  const DUR = "(\\d+ h(?: \\d+ m)?|\\d+ m)";
+  const T = "(\\d{1,2}:\\d{2})";
+  const N = "([\\d,.]+)";
+  const H = (s) => String(s).replace(/(\d+) h (\d+) m\b/g, "$1 小時 $2 分").replace(/(\d+) h\b/g, "$1 小時").replace(/(\d+) m\b/g, "$1 分");
+  const MD = (s) => String(s).replace(/\b(Sun|Mon|Tue|Wed|Thu|Fri|Sat), (Jan|Feb|Mar|Apr|May|Jun|Jul|Aug|Sep|Oct|Nov|Dec) (\d{1,2})\b/g, (_, w, m, d) => `${MON.indexOf(m) + 1}月${d}日（週${WK[w]}）`)
+    .replace(/\b(Jan|Feb|Mar|Apr|May|Jun|Jul|Aug|Sep|Oct|Nov|Dec) (\d{1,2})\b/g, (_, m, d) => `${MON.indexOf(m) + 1}月${d}日`);
+  const D = (s) => { s = String(s).trim(); const l = s.toLowerCase(); return l === "today" ? "今天" : l === "yesterday" ? "昨天" : MD(s); };
+  const K = (s) => String(s).replace(/([\d,.]+) ?kcal\b/g, "$1 大卡");
+  const PCF = (s) => String(s).replace(/\bP ([\d,.]+) · C ([\d,.]+) · F ([\d,.]+) g\b/g, "蛋白質 $1 · 碳水 $2 · 脂肪 $3 g");
+  const days = (n) => `${n} 天`;
+
+  /* ---------- exact phrases ---------- */
+  const EX = {
+    // tabs, header, common
+    "Today": "今天", "today": "今天", "Yesterday": "昨天", "Progress": "進度", "Coach": "教練", "Profile": "個人",
+    "Add food": "新增食物", "Back": "返回", "Close": "關閉", "Whose day to show": "要看誰的一天", "Main": "主選單", "Previous day": "前一天", "Next day": "後一天",
+    "Calories and macros": "熱量和營養素", "Sleep": "睡眠", "Food": "食物", "Time range": "時間範圍", "Measure": "項目", "Dismiss": "關閉", "Send": "送出", "Stop": "停止",
+    "Add a photo": "加入照片", "Message to your coach": "傳訊息給教練", "Remove photo": "移除照片", "Photo to send": "要傳的照片", "Photo you sent": "你傳的照片", "Your food photo": "你的食物照片",
+    "Amount eaten": "吃了多少", "Food name": "食物名稱", "Portion": "份量", "Less": "減少", "More": "更多", "Setup type": "設定方式", "Thinking": "思考中", "Loading…": "載入中…",
+    "Loading your plates…": "正在載入…",
+    // today
+    "Over target": "超過目標", "Left today": "今天還剩", "Left that day": "那天還剩", "kcal": "大卡", "Protein": "蛋白質", "Carbs": "碳水", "Fat": "脂肪", "Protein goal reached": "蛋白質已達標",
+    "Finding foods that fit…": "正在找適合的食物…", "Ideas": "推薦", "Log": "記錄", "No ideas came back. Try again.": "沒有拿到建議，再試一次。",
+    "Tonight's bedtime": "今晚的就寢時間", "Time for bed": "該睡了", "Good night": "晚安", "Undo": "復原",
+    "Sleep well. Open Two Plates when you wake up and your sleep is saved.": "睡個好覺。醒來後打開 Two Plates，睡眠就會存好。",
+    "Good morning! Sleep saved": "早安！睡眠已存好", "Last night": "昨晚", "Edit": "編輯", "No sleep logged": "沒有睡眠紀錄",
+    "It arrives when your Shortcuts automation runs. You can also add it by hand.": "捷徑自動化執行時就會傳進來，你也可以手動新增。",
+    "Add it, or set up automatic tracking.": "手動新增，或設定自動追蹤。", "Add it if you remember.": "記得的話可以補上。", "Add": "新增", "Sleep check": "睡眠檢查",
+    "estimated from app use": "根據 App 使用時間推估", "from Good night": "來自「晚安」按鈕", "entered by hand": "手動輸入", "from Mi Fitness": "來自 Mi Fitness", "from phone use": "根據手機使用推估", "from screenshot": "來自截圖",
+    "Nothing yet. Tap + to log your first food.": "還沒有紀錄。點 + 記錄今天的第一餐。", "Nothing logged this day. Tap + to add.": "這天沒有紀錄。點 + 新增。",
+    "A steady bedtime, weekends too, makes it easier to fall asleep and wake up. Try to stay within the same 30 minutes.": "就寢時間固定（週末也一樣），比較容易入睡和起床。盡量維持在同樣的 30 分鐘內。",
+    "Missing sleep adds up and slows muscle recovery. A couple of earlier nights helps more than one long lie-in.": "少睡會累積，也會拖慢肌肉恢復。早睡幾晚比一次睡很久更有幫助。",
+    "Much more than your goal. If you still feel tired, it may be catching up on missed sleep. A steady schedule usually fixes it.": "比目標多很多。如果還是覺得累，可能是在補之前少睡的。作息穩定通常就會改善。",
+    // progress
+    "Your progress": "你的進度", "Check-in": "新增測量", "Weekly coach": "每週教練", "Start with your first InBody": "先從第一次 InBody 開始",
+    "After two weekly InBody check-ins, this card compares fat and muscle and tells you whether to change your calories.": "有兩次 InBody 紀錄後，這裡會比較脂肪和肌肉，告訴你要不要調整熱量。",
+    "Add InBody result": "新增 InBody 結果", "Baseline saved": "已存基準值", "Next InBody unlocks your first review": "下次 InBody 就能看到第一次分析",
+    "Need body-fat numbers": "需要體脂數據", "Add body fat (kg or %) to both check-ins so the coach can compare them.": "兩次測量都要有體脂（kg 或 %），教練才能比較。",
+    "Losing too fast": "掉得太快", "You're dropping more than about 1 kg of fat (or 1% of body weight) a week. That pace usually costs muscle and energy.": "你每週掉超過約 1 kg 脂肪（或體重的 1%），這種速度通常會犧牲肌肉和體力。",
+    "Muscle dipped": "肌肉掉了", "Skeletal muscle went down. Eat a bit more, keep protein high and keep lifting heavy.": "骨骼肌減少了。多吃一點、維持高蛋白，並持續做大重量訓練。",
+    "Fat down, muscle up": "體脂下降，肌肉增加", "This is body recomposition working: fat is dropping while muscle grows. Keep everything the same.": "這就是體態重組在發揮作用：脂肪減少、肌肉增加。一切照舊就好。",
+    "Right on track": "完全在軌道上", "Fat is coming off at a healthy pace and muscle is holding. Keep the same targets.": "脂肪以健康的速度下降，肌肉也維持住了。目標維持不變。",
+    "Slow but moving": "慢慢在進步", "Fat is going down slowly. Give it another week before changing anything.": "脂肪慢慢在下降。再觀察一週再做調整。",
+    "Eating above target": "吃超過目標", "Fat loss stalled": "減脂停滯", "Body fat didn't drop even though you stayed on target. A small cut will restart it.": "雖然有照目標吃，體脂還是沒下降。稍微少吃一點就能重新啟動。",
+    "Not enough logged days": "記錄天數不夠",
+    "Test at the same time each week: morning, before eating or training, after the bathroom. InBody readings swing with water and food.": "每週在同樣的時間測：早上、吃東西和運動前、上完廁所後。InBody 數字會隨水分和食物變動。",
+    "Fat mass": "體脂肪重", "Muscle": "肌肉", "Weight": "體重", "Body fat": "體脂率", "no data": "沒有資料", "Apply": "套用", "Applied": "已套用",
+    "See what moved your numbers": "看看是什麼影響了你的數字", "Claude is reviewing your week… this can take up to a minute.": "Claude 正在分析你這週的狀況…最多需要一分鐘。",
+    "Claude's analysis": "Claude 的分析", "Next week": "下週", "Use these": "套用這些", "In use": "使用中", "Watch next time:": "下次注意：", "Suggested:": "建議：", "· P": "· 蛋白質",
+    "Muscle (SMM)": "肌肉（SMM）", "1 check-in": "1 次測量", "No data yet": "還沒有資料", "1M": "1 個月", "3M": "3 個月", "6M": "6 個月", "All": "全部",
+    "shaded = InBody normal range": "陰影 = InBody 正常範圍", "Show as table": "以表格顯示", "Date": "日期", "Weight (kg)": "體重（kg）", "Body fat (%)": "體脂率（%）",
+    "Muscle (SMM) (kg)": "肌肉（SMM）（kg）", "Fat mass (kg)": "體脂肪重（kg）", "Last 14 days": "最近 14 天", "Calories": "熱量", "7-day avg": "7 天平均", "Protein avg": "蛋白質平均",
+    "Days logged": "記錄天數", "Day": "日期", "Protein g": "蛋白質 g", "last 14 nights": "最近 14 晚", "7-night avg": "7 晚平均", "Avg bedtime": "平均就寢", "Avg wake-up": "平均起床",
+    "Morning": "早上", "Slept": "睡眠", "Bed": "上床", "Up": "起床", "Not logged": "未記錄",
+    "No sleep logged yet. Bring it in from your Mi Fitness band, from phone use through the iPhone Shortcuts app, or add it by hand.": "還沒有睡眠紀錄。可以從 Mi Fitness 手環匯入、透過 iPhone 捷徑從手機使用推估，或手動新增。",
+    "Add last night": "新增昨晚", "Set up automatic": "設定自動追蹤", "Check-ins": "測量紀錄", "No check-ins yet": "還沒有測量紀錄",
+    "Add your weekly InBody result. A photo of the printout works: Claude reads the numbers for you.": "新增每週的 InBody 結果。拍下報告就可以，Claude 會幫你讀數字。",
+    "Add InBody check-in": "新增 InBody 測量", "Weight only": "只有體重",
+    // profile
+    "Male": "男", "Female": "女", "Daily targets": "每日目標", "Auto": "自動", "Set by hand": "手動設定", "Resting burn (BMR)": "基礎代謝（BMR）", "maintenance": "維持熱量",
+    "Reset to auto": "恢復自動", "Sleep goals": "睡眠目標", "Change": "修改", "Sleep each night": "每晚睡眠", "Bedtime target": "就寢目標",
+    "Two Plates checks every night against these, flags short or late nights, and suggests a bedtime each evening.": "Two Plates 每晚都會對照這些目標，標出睡太少或太晚睡的晚上，並在晚上建議就寢時間。",
+    "Sleep tracking": "睡眠追蹤", "Phone use": "手機使用", "Two Plates use": "Two Plates 使用時間",
+    "Sleep comes from your band through Apple Health each time you open Two Plates from your Shortcuts icon.": "每次從捷徑圖示打開 Two Plates，睡眠就會從手環經由 Apple 健康傳進來。",
+    "Sleep comes from the longest break in phone use at night each time you open Two Plates from your Shortcuts icon.": "每次從捷徑圖示打開 Two Plates，會用晚上最長一段沒用手機的時間當作睡眠。",
+    "Right now sleep is estimated from when you use Two Plates. Set up Shortcuts to use your band or your whole phone instead.": "目前睡眠是根據你使用 Two Plates 的時間推估。設定捷徑就能改用手環或整支手機的使用情況。",
+    "Last link from Shortcuts on this phone: none received yet": "這支手機最近一次從捷徑收到的連結：還沒有收到",
+    "Setup guide": "設定教學", "Set up automatic sleep": "設定自動睡眠追蹤", "People": "成員", "This phone": "這支手機", "Change who's using this phone": "更換這支手機的使用者",
+    "Add a friend": "新增朋友", "Sync": "同步", "Demo: this browser only": "展示版：只存在這個瀏覽器", "Photo AI": "照片 AI", "On": "開啟", "Text only": "只有文字", "Off": "關閉",
+    "Products scanned": "掃過的商品", "Saved foods": "常吃的食物",
+    // sheets
+    "Photo of your food": "食物照片", "Describe your food": "描述你吃的東西", "Quick add": "快速新增", "Edit food": "編輯食物", "Scan barcode": "掃描條碼", "Log product": "記錄商品",
+    "New product": "新商品", "Edit product": "編輯商品", "Weekly check-in": "每週測量", "Edit check-in": "編輯測量", "Your profile": "你的個人資料", "Edit profile": "編輯個人資料",
+    "Who's using this phone?": "誰在用這支手機？", "Set targets by hand": "手動設定目標", "Add sleep": "新增睡眠", "Edit sleep": "編輯睡眠", "Automatic sleep": "自動睡眠追蹤", "Week in review": "每週回顧",
+    "Opening photo…": "正在打開照片…", "Looking at your food…": "正在看你的食物…", "Working it out…": "計算中…", "Usually 10–40 seconds": "通常需要 10–40 秒", "Reading the barcode…": "正在讀取條碼…",
+    "Reading the nutrition label…": "正在讀取營養標示…", "Usually 10–30 seconds": "通常需要 10–30 秒", "Reading your InBody sheet…": "正在讀取 InBody 報告…", "Usually 15–40 seconds": "通常需要 15–40 秒",
+    "Reading your sleep screenshot…": "正在讀取睡眠截圖…",
+    "Snap a photo": "拍照", "Claude counts it": "Claude 幫你算", "Describe it": "文字描述", "“Beef noodles, large”": "「牛肉麵，大碗」", "Packaged food": "包裝食品", "Type the numbers": "直接輸入數字",
+    "Open in Claude to use": "在 Claude 裡打開才能用", "Our saved foods": "常吃的食物", "Tap to log": "點一下就記錄", "Recent": "最近吃過", "Delete": "刪除",
+    "Foods you log and save show up here for one-tap logging.": "記錄和收藏的食物會出現在這裡，點一下就能記錄。", "InBody check-in": "InBody 測量", "Snap your result sheet": "拍下結果報告",
+    "What did you eat? Include amounts if you know them.": "你吃了什麼？知道份量的話也寫上。",
+    "Large beef noodle soup, a tea egg, and a 50% sugar bubble milk tea (medium)": "大碗牛肉麵、一顆茶葉蛋、一杯中杯半糖珍奶",
+    "Count calories": "計算熱量", "Anything Claude should know? (optional)": "有什麼要告訴 Claude 的嗎？（選填）", "I only ate half the rice. Sauce on the side.": "飯只吃一半，醬汁另外放。",
+    "Choose another photo": "換一張照片", "How much of this did you eat?": "你吃了多少？", "All of it": "全部", "low": "低", "medium": "中", "high": "高",
+    "Also save to our foods as one item": "也合併存成一項常吃的食物", "Pick at least one item": "至少選一項",
+    "No food found in that photo. Try a closer shot, or describe it in words.": "這張照片裡找不到食物。拍近一點，或用文字描述。",
+    "Couldn't find any food in that description. Try naming the dishes.": "描述裡找不到食物，試著寫出菜名。", "Try again": "再試一次", "Change description": "修改描述",
+    "That photo couldn't be opened. Try a different one.": "這張照片打不開，換一張試試。", "Type what you ate first.": "先輸入你吃了什麼。",
+    "Name": "名稱", "Portion (optional)": "份量（選填）", "Calories (kcal)": "熱量（大卡）", "Protein (g)": "蛋白質（g）", "Carbs (g)": "碳水（g）", "Fat (g)": "脂肪（g）",
+    "1 scoop + 300 ml milk": "1 匙 + 300 ml 牛奶", "Save to our foods for one-tap logging": "存到常吃的食物，之後點一下就能記錄", "Log it": "記錄",
+    "Servings": "份數", "Numbers below are for one serving.": "下面的數字是一份的量。", "Save changes": "儲存", "Save to our foods": "存到常吃的食物", "Delete for sure": "確定刪除",
+    "Take a close, sharp photo with the barcode filling most of the picture. Good light helps.": "靠近拍一張清楚的照片，讓條碼佔滿大部分畫面，光線充足比較好。",
+    "Photo of barcode": "拍條碼", "Or type the number under the barcode": "或輸入條碼下方的數字", "Look up": "查詢", "Scanned before": "掃過的商品", "No scan needed": "不用再掃",
+    "The first time you scan a product, you'll add its nutrition label once (Claude can read it from a photo). After that, both of you can log it with one scan.": "第一次掃描商品時，要先加一次營養標示（Claude 可以從照片讀取）。之後大家都能一掃就記錄。",
+    "That doesn't look like a barcode number. Check the digits and try again.": "這看起來不像條碼號碼，檢查一下數字再試一次。",
+    "Couldn't read a barcode in that photo. Move closer, hold steady, or type the number.": "這張照片讀不到條碼。靠近一點、拿穩，或直接輸入數字。",
+    "Edit product details": "編輯商品資料", "This product was removed.": "這個商品已被移除。", "Filled from the label. Check the numbers, then save.": "已從標示填入，確認數字後再儲存。",
+    "Read label from that photo": "從那張照片讀取標示", "Photo of label": "拍營養標示", "Product name": "商品名稱", "Unsweetened soy milk": "無糖豆漿", "Serving size": "每份份量",
+    "The amount the numbers below are for (每一份量).": "下面數字對應的份量（每一份量）。", "Save product": "儲存商品",
+    "Couldn't find a nutrition label in that photo. Try a straight-on, close photo of the label.": "這張照片找不到營養標示，試著正面靠近拍。",
+    "Add the product name.": "請輸入商品名稱。", "Add the calories per serving.": "請輸入每份熱量。", "Product saved for both of you": "商品已存好，大家都能用",
+    "Snap your InBody result": "拍下你的 InBody 結果",
+    "Take a photo of the printout from the clinic. Claude reads your weight, muscle and body fat, and you check them before saving.": "拍下測量後拿到的報告。Claude 會讀出你的體重、肌肉和體脂，存檔前你可以再確認。",
+    "Take photo of InBody sheet": "拍 InBody 報告", "Try another photo": "換一張照片", "Enter numbers by hand": "手動輸入數字",
+    "Filled from your photo. Check each number against the sheet, then save.": "已從照片填入，對照報告確認每個數字後再儲存。", "Read from a photo instead": "改用照片讀取",
+    "Test date": "測量日期", "Skeletal muscle (SMM) (kg)": "骨骼肌重（SMM）（kg）", "Body fat mass (kg)": "體脂肪重（kg）", "Visceral fat level": "內臟脂肪等級",
+    "BMR (kcal)": "基礎代謝（大卡）", "Fat-free mass (kg)": "除脂體重（kg）", "InBody score": "InBody 分數",
+    "Only weight? That's fine. Body fat and muscle unlock the weekly coach.": "只有體重也沒關係。有體脂和肌肉資料，才能使用每週教練。",
+    "Save check-in": "儲存測量", "Delete this check-in for sure": "確定刪除這筆測量", "Delete check-in": "刪除測量",
+    "Couldn't read numbers from that photo. Try again with the whole sheet in frame and no glare.": "這張照片讀不到數字。把整張報告拍進去、避免反光後再試一次。",
+    "Enter at least your weight.": "至少要輸入體重。", "Check-in saved": "測量已儲存", "Check-in deleted": "測量已刪除", "That photo couldn't be opened.": "這張照片打不開。",
+    "Your first name": "你的名字", "Sex (for the calorie formula)": "性別（用於熱量公式）", "Birth year": "出生年", "Height (cm)": "身高（cm）", "How active are you?": "你的活動量？",
+    "Mostly sitting": "大多坐著", "Desk job, little exercise": "辦公室工作，很少運動", "Lightly active": "輕度活動", "1–3 workouts a week": "每週運動 1–3 次", "Active": "活躍",
+    "3–5 workouts a week": "每週運動 3–5 次", "Very active": "非常活躍", "6–7 workouts or a physical job": "每週運動 6–7 次，或勞力工作",
+    "Fat-loss pace": "減脂速度", "Gentle": "溫和", "Steady": "穩定", "Faster": "較快", "Steady suits most people building muscle at the same time.": "想同時增肌的人，大多適合「穩定」。",
+    "Color": "顏色", "Save profile": "儲存個人資料", "Create profile": "建立個人資料", "Add a name.": "請輸入名字。", "Check the birth year.": "請檢查出生年。",
+    "Height is in centimeters, e.g. 170.": "身高的單位是公分，例如 170。", "Weight is in kilograms, e.g. 65.": "體重的單位是公斤，例如 65。", "Profile saved": "個人資料已儲存",
+    "Each phone remembers whose meals it logs. You can still look at each other's day anytime.": "每支手機會記得是誰在記錄，你還是隨時可以看彼此的一天。",
+    "That's me": "這是我", "I'm new here": "我是新成員",
+    "Use this if a dietitian or coach gave you numbers. The weekly coach stops adjusting until you reset to auto.": "如果營養師或教練給了你數字，就用這個。恢復自動之前，每週教練不會再調整。",
+    "Save targets": "儲存目標", "Targets saved": "目標已儲存", "Back to automatic targets": "已恢復自動目標", "Calories should be between 800 and 6000.": "熱量應該在 800 到 6000 之間。",
+    "Read from a screenshot": "從截圖讀取", "Screenshot your sleep in Mi Fitness (or any sleep app) and Claude fills in the times": "截下 Mi Fitness（或任何睡眠 App）的睡眠畫面，Claude 會幫你填入時間",
+    "Filled from your screenshot. Check the times, then save.": "已從截圖填入，確認時間後再儲存。", "Fell asleep": "入睡", "Woke up": "起床", "Goal reached": "達成目標",
+    "Enter both times": "請輸入兩個時間", "Save sleep": "儲存睡眠", "Set up automatic sleep tracking": "設定自動睡眠追蹤",
+    "Couldn't find sleep times in that screenshot. Try the screen that shows when you fell asleep and woke up.": "截圖裡找不到睡眠時間，試試有顯示入睡和起床時間的畫面。",
+    "That screenshot couldn't be opened.": "這張截圖打不開。", "Enter both times.": "請輸入兩個時間。", "That's not a normal night. Check the times.": "這不像正常的一晚，請檢查時間。",
+    "Sleep deleted": "睡眠已刪除", "Pick a bedtime.": "請選擇就寢時間。", "Mi Fitness band": "Mi Fitness 手環", "iPhone only": "只用 iPhone",
+    "Your Two Plates link (you'll paste it into the shortcut)": "你的 Two Plates 連結（要貼到捷徑裡）", "Copy": "複製", "Link copied": "已複製連結", "Link selected. Tap Copy in the menu.": "已選取連結，請在選單點「拷貝」。",
+    "1. Log phone use (automation)": "1. 記錄手機使用（自動化）", "2. Shortcut that sends the night": "2. 傳送睡眠的捷徑", "3. Run it every morning": "3. 每天早上自動執行",
+    "Two Plates looks for the longest break in phone use at night: the last use before it is bedtime and the first use after it is wake-up. A quick check in the middle of the night (under 20 minutes) doesn't split it.": "Two Plates 會找晚上最長一段沒用手機的時間：之前最後一次使用就是上床時間，之後第一次使用就是起床時間。半夜短暫看一下手機（20 分鐘內）不會把它切開。",
+    "Most adults need 7–9 hours. When you're training and eating less to lose fat, 7½–8 hours helps your muscles recover and keeps hunger down.": "大多數成人需要 7–9 小時。一邊訓練一邊少吃減脂時，睡 7½–8 小時有助肌肉恢復，也比較不會餓。",
+    "Two Plates warns you when you go to bed more than 30 minutes after this.": "比這個時間晚 30 分鐘以上上床，Two Plates 會提醒你。", "Save goals": "儲存目標",
+    "Good night! Open Two Plates when you wake up.": "晚安！醒來後打開 Two Plates。", "Sleep timer off": "睡眠計時已關閉",
+    // review
+    "No InBody yet": "還沒有 InBody", "Add your first InBody check-in. From the second one on, this page explains what in your food and sleep moved the numbers.": "新增第一次 InBody 測量。從第二次開始，這裡會說明飲食和睡眠中是什麼影響了數字。",
+    "Fat going down": "體脂在下降", "Muscle went down": "肌肉減少了", "Fat went up": "體脂上升了", "Fat about the same": "體脂差不多",
+    "Muscle (kg)": "肌肉（kg）", "Body fat (pt)": "體脂率（百分點）", "What happened": "發生了什麼", "Calories / day": "每日熱量", "Protein / day": "每日蛋白質", "Sleep / night": "每晚睡眠",
+    "After 9 pm": "晚上 9 點後", "not tracked": "沒有追蹤", "a day": "每天", "What likely held you back": "可能拖慢你的原因", "Still worth fixing": "還可以改進的地方", "What went well": "做得好的地方",
+    "Food and sleep look on track, so this change is probably water, salt or test timing. InBody readings can swing about 0.5 kg. Keep going and see what next week shows.": "飲食和睡眠看起來都在軌道上，這次的變化可能是水分、鹽分或測量時間造成的。InBody 數字可能差 0.5 kg 左右，繼續保持，看看下週的結果。",
+    "Your better vs worse weeks": "表現好與表現差的時期比較", "Fat went down": "體脂有下降", "Fat didn't": "體脂沒下降", "Late bedtimes": "晚睡", "Biggest calorie sources": "熱量主要來源",
+    "Claude is analysing your week…": "Claude 正在分析你這週的狀況…", "Looking at every day's food and sleep. Usually 20–60 seconds.": "正在看每一天的飲食和睡眠，通常需要 20–60 秒。",
+    "Analyse again": "重新分析", "Ask Claude to explain what happened": "請 Claude 解釋發生了什麼", "Your week in review": "你的每週回顧", "Your plan": "你的計畫", "This week's plan": "本週計畫",
+    "With gaps, the real picture may be different. Log every day, even the off-plan ones.": "有空缺的話，實際情況可能不一樣。每天都記錄，吃多的日子也一樣。",
+    // coach
+    "New chat": "新對話", "Clear this chat? Changes you applied stay.": "要清除這段對話嗎？已套用的改變會保留。", "Clear": "清除", "Keep": "保留", "Loading your chat…": "正在載入對話…",
+    "Ask your coach…": "問問你的教練…", "What should I know about this photo?": "關於這張照片，有什麼要告訴我的嗎？",
+    "Claude can make mistakes. Check numbers before you tap Apply.": "Claude 可能會出錯，按「套用」之前請確認數字。", "Thinking… usually 10–40 seconds": "思考中…通常需要 10–40 秒",
+    "The answer was cut short. Ask for less at a time.": "回答被截斷了，一次問少一點。", "Stopped.": "已停止。", "Claude suggested a change, but it came back garbled. Ask again.": "Claude 建議了一個改變，但內容有誤，請再問一次。",
+    "No thanks": "不用了", "Not applied": "沒有套用", "Undone": "已復原", "Done": "完成", "The coach chats with the person this phone belongs to.": "教練會和這支手機的主人聊天。", "Choose": "選擇",
+    "private to you": "只有你看得到",
+    "How many calories should I eat to lose fat without losing muscle?": "我應該吃多少熱量，才能減脂又不掉肌肉？", "How am I doing this week?": "我這週表現如何？",
+    "I just had a 7-Eleven chicken breast and an unsweetened soy milk": "我剛吃了 7-11 的雞胸肉和無糖豆漿", "What can I eat for dinner with what's left today?": "今天剩下的熱量，晚餐可以吃什麼？",
+    "Why isn't my body fat going down?": "為什麼我的體脂都沒下降？", "Change my bedtime goal to 23:00": "把就寢目標改成 23:00",
+    "Log food": "記錄食物", "Change daily targets": "修改每日目標", "Switch to automatic targets": "改回自動目標", "Update your profile": "更新你的個人資料", "Change sleep goals": "修改睡眠目標",
+    "Unknown change": "未知的改變", "No food with calories came with this.": "沒有附上含熱量的食物。", "Nothing would change.": "沒有任何改變。",
+    "Saved": "已儲存", "Deleted": "已刪除", "Saved to our foods": "已存到常吃的食物", "Sleep goals saved": "睡眠目標已儲存", "Food updated": "食物已更新", "Food removed": "食物已移除",
+    "Profile updated": "個人資料已更新", "Check-in updated": "測量已更新", "Removed from our foods": "已從常吃的食物移除", "Undo ": "復原",
+    "Couldn't save. You may only have view access.": "存不起來，你可能只有檢視權限。", "Couldn't save that. Check your connection and try again.": "存不起來，請檢查網路後再試一次。",
+    "Couldn't reach Claude. Check your connection and try again.": "連不上 Claude，請檢查網路後再試一次。", "The answer came back incomplete. Try again.": "回答不完整，再試一次。",
+    "Enter calories (or at least protein).": "請輸入熱量（或至少輸入蛋白質）。", "Add the photo again, then send.": "再加一次照片後送出。",
+    // demo-only seeded analysis
+    "Fat down 1.0 kg, muscle up 0.4 kg": "體脂少了 1.0 kg，肌肉多了 0.4 kg",
+    "One weekend treat left": "週末只剩一個小點心",
+    "A medium bubble tea on Saturday afternoon, about 300 kcal. That's fine; it no longer comes with a late-night snack.": "星期六下午一杯中杯珍奶，大約 300 大卡。這沒關係，重點是已經不再搭配宵夜了。",
+    "No food logged after 9 pm on weekends": "週末晚上 9 點後沒有吃東西", "In bed before midnight most nights": "大部分晚上都在午夜前上床",
+    "Keep weekend dinners like weekday ones and plan one treat ahead": "週末晚餐跟平日一樣，點心事先規劃一個就好",
+    "Add a protein snack on rest days, like a tea egg or soy milk": "休息日加一份高蛋白點心，例如茶葉蛋或豆漿", "Test at the same time of day for the next InBody": "下次 InBody 在一天中同樣的時間測量",
+    "Muscle: if it keeps rising while fat drops, keep calories the same.": "肌肉：如果肌肉持續增加、脂肪持續下降，熱量就維持不變。",
+    "Slow, steady fat loss: keep going": "慢慢穩定地減脂：繼續保持",
+    "Body fat dropped 0.7 kg in 9 days while muscle went up 0.2 kg. Calories have been on target most days; protein is the one thing a little low.": "9 天內體脂少了 0.7 kg，肌肉多了 0.2 kg。大部分天數熱量都有達標，只有蛋白質稍微不足。",
+    "Add a protein food at breakfast, like Greek yogurt or soy milk": "早餐加一份蛋白質，例如希臘優格或豆漿", "Keep the small bubble tea to once a week": "小杯珍奶維持一週一次就好",
+    "Keep the 23:00 bedtime": "維持 23:00 上床", "Skeletal muscle: it should hold or rise as protein goes up.": "骨骼肌：蛋白質增加後，應該維持或上升。",
+    "Unsweetened soy milk (sample product)": "無糖豆漿（範例商品）", "Roasted sweet potato (sample product)": "烤地瓜（範例商品）", "1 medium (200 g)": "1 條（200 g）",
+    "Sample product (demo label read)": "範例商品（展示版讀取的標示）",
+    "1 medium": "1 個（中）", "1 roll": "1 份", "1 box": "1 個", "1 egg": "1 顆", "1 bowl": "1 碗", "1 plate": "1 盤", "1 large cup": "1 大杯", "1 fruit": "1 顆", "1 bun": "1 個",
+    "1 pack (100 g)": "1 包（100 g）", "1 scoop + water": "1 匙 + 水", "1 cup (700 ml)": "1 杯（700 ml）", "1 cup (500 ml)": "1 杯（500 ml）", "1 sandwich": "1 份", "1 set": "1 套",
+  };
+
+  /* ---------- patterns: whole string ---------- */
+  const R = (src) => new RegExp("^" + src.replace(/DUR/g, DUR).replace(/TIME/g, T).replace(/NUM/g, N) + "$");
+  const PAT = [
+    [R("Your day(?: · (\\d+)-day streak)?"), (_, n) => "你的一天" + (n ? ` · 連續 ${n} 天` : "")],
+    [R("(.+)'s day(?: · (\\d+)-day streak)?"), (_, p, n) => `${p} 的一天` + (n ? ` · 連續 ${n} 天` : "")],
+    [R("(.+)'s progress"), (_, p) => `${p} 的進度`],
+    [R("NUM over"), (_, n) => `超過 ${n}`],
+    [R("NUM g to go"), (_, n) => `還差 ${n} g`],
+    [R("Slept DUR"), (_, d) => `睡了 ${H(d)}`],
+    [R("(\\d+) items?"), (_, n) => `${n} 項`],
+    [R("(\\d+) days?"), (_, n) => days(n)],
+    [R("Log (\\d+) items?"), (_, n) => `記錄 ${n} 項`],
+    [R("Apply all (\\d+)"), (_, n) => `全部套用（${n}）`],
+    [R("You averaged NUM kcal on logged days, above your NUM target\\. Hitting the target is the first fix\\."), (_, a, b) => `有記錄的日子平均吃 ${a} 大卡，超過目標 ${b}。先做到吃在目標內。`],
+    [R("Only (\\d+) of (\\d+) days were logged, so it's hard to tell why fat didn't drop\\. Log every day this week\\."), (_, a, b) => `${b} 天只記錄了 ${a} 天，很難判斷體脂為什麼沒降。這週每天都記錄吧。`],
+    [R("Protein averaged NUM g a day, under your NUM g target\\. Add a protein food to every meal\\."), (_, a, b) => `蛋白質平均每天 ${a} g，低於目標 ${b} g。每一餐都加一份蛋白質食物。`],
+    [R("Visceral fat level is (\\d+) \\(InBody's healthy range is under 10\\)\\. Daily walking and less sugar help most\\."), (_, a) => `內臟脂肪等級是 ${a}（InBody 的健康範圍是 10 以下）。每天走路、少吃糖最有幫助。`],
+    [R("Sleep averaged DUR a night, under your DUR goal\\. Short sleep makes fat loss harder and slows muscle repair\\."), (_, a, b) => `平均每晚睡 ${H(a)}，少於目標 ${H(b)}。睡太少會讓減脂更難，也會拖慢肌肉修復。`],
+    [R("([+−±][\\d.]+) (kg|pt)/week"), (_, v, u) => `${v} ${u === "pt" ? "百分點" : "kg"}/週`],
+    [R("([+−±][\\d.]+) pt"), (_, v) => `${v} 百分點`],
+    [R("now ([\\d.]+)%"), (_, v) => `目前 ${v}%`],
+    [R("Logged (\\d+) of (\\d+) days(?: · averaged NUM kcal, NUM g protein)?"), (_, a, b, k, p) => `記錄了 ${a}/${b} 天` + (k ? ` · 平均 ${k} 大卡、蛋白質 ${p} g` : "")],
+    [R("Add a check-in to see your (.+) trend\\."), (_, m) => `新增測量就能看到${({ weight: "體重", "body fat": "體脂率", "muscle (smm)": "肌肉", "fat mass": "體脂肪重" })[m] || m}的趨勢。`],
+    [R("(\\d+) of (\\d+)"), (_, a, b) => `${a} / ${b}`],
+    [R("Target NUM"), (_, n) => `目標 ${n}`],
+    [R("Goal DUR"), (_, d) => `目標 ${H(d)}`],
+    [R("Normal (.+)"), (_, r) => `正常 ${r}`],
+    [R("Muscle ([\\d.]+ kg)"), (_, v) => `肌肉 ${v}`],
+    [R("Fat ([\\d.]+%)"), (_, v) => `體脂 ${v}`],
+    [R("Visceral (\\d+)"), (_, v) => `內臟脂肪 ${v}`],
+    [R("(\\d+) yrs"), (_, v) => `${v} 歲`],
+    [R("from (.+)"), (_, s) => `來自 ${tr(s)}`],
+    [R(", from (.+)"), (_, s) => `，來自 ${src(s)}`],
+    [R("× ([\\d.]+) for \"(.+)\" ="), (_, f, a) => `× ${f}（${tr(a)}）=`],
+    [R("(Gentle|Steady|Faster) pace, −(\\d+)% under maintenance(?:, coach adjustment ([+−±][\\d,]+) kcal)?(?:, raised to the NUM kcal minimum)? ="),
+      (_, p, d, adj, min) => `${tr(p)}速度，比維持熱量少 ${d}%` + (adj ? `，教練調整 ${adj} 大卡` : "") + (min ? `，提高到最低 ${min} 大卡` : "") + " ="],
+    [R("Protein (2\\.2 g per kg of lean mass \\(([\\d.]+) kg\\)|1\\.8 g per kg of body weight)(?: ([+−±][\\d,]+) g coach adjustment)?\\. Fat about 27% of calories\\. Carbs fill the rest\\."),
+      (_, how, lean, adj) => `蛋白質：${lean ? `每公斤除脂體重 2.2 g（${lean} kg）` : "每公斤體重 1.8 g"}${adj ? `，教練調整 ${adj} g` : ""}。脂肪約佔熱量 27%，其餘是碳水。`],
+    [R("NUM g protein"), (_, n) => `蛋白質 ${n} g`],
+    [R("NUM kcal a day"), (_, n) => `每天 ${n} 大卡`],
+    [R("You're looking at (.+)'s profile\\."), (_, p) => `你正在看 ${p} 的個人資料。`],
+    [R("Barcode (\\S+)"), (_, c) => `條碼 ${c}`],
+    [R("Per (.+?): (.+)"), (_, s, v) => `每 ${tr(s)}：${PCF(K(v))}`],
+    [R("P NUM · C NUM · F NUM g"), (_, p, c, f) => `蛋白質 ${p} · 碳水 ${c} · 脂肪 ${f} g`],
+    [R("· C NUM · F NUM g"), (_, c, f) => `· 碳水 ${c} · 脂肪 ${f} g`],
+    [R("P NUM g"), (_, p) => `蛋白質 ${p} g`],
+    [R("Macros add up to NUM kcal(?: \\((.+) vs\\. calories\\))?\\."), (_, m, d) => `營養素加起來是 ${m} 大卡` + (d ? `（和熱量差 ${d}）` : "") + "。"],
+    [R("The night that ended (this morning|yesterday morning|the morning of (.+))\\."), (_, w, d) => `結束於${w === "this morning" ? "今天早上" : w === "yesterday morning" ? "昨天早上" : D(d) + "早上"}的那一晚。`],
+    [R("DUR under your DUR goal"), (_, a, b) => `比目標 ${H(b)} 少 ${H(a)}`],
+    [R("Use the app's total sleep \\(DUR\\), which leaves out time awake"), (_, d) => `使用 App 的總睡眠時間（${H(d)}），不含醒著的時間`],
+    [R("It's DUR past your TIME bedtime\\. Put the phone down now\\."), (_, d, t) => `已經超過就寢時間 ${t} ${H(d)} 了，現在就放下手機吧。`],
+    [R("Sleep timer on since TIME"), (_, t) => `睡眠計時從 ${t} 開始`],
+    [R("(TIME → TIME) · (.+)"), (_, r, s) => `${r} · ${tr(s)}`],
+    [R("Short night: DUR"), (_, d) => `睡太少：${H(d)}`],
+    [R("DUR under your DUR goal\\. Short sleep makes you hungrier, so expect more cravings today\\. Keep protein high and plan your snacks\\."), (_, a, b) => `比目標 ${H(b)} 少了 ${H(a)}。睡太少會更容易餓，今天可能比較嘴饞。維持高蛋白，先規劃好點心。`],
+    [R("Late to bed: TIME"), (_, t) => `太晚上床：${t}`],
+    [R("DUR after your TIME target\\. Late nights push back your body clock and make the next morning harder\\."), (_, d, t) => `比目標 ${t} 晚了 ${H(d)}。晚睡會打亂生理時鐘，隔天早上也更難起床。`],
+    [R("Late (\\d+) of the last (\\d+) nights"), (_, a, b) => `最近 ${b} 晚有 ${a} 晚太晚睡`],
+    [R("Move your bedtime 15 minutes earlier each night until you reach TIME\\. Small steps stick better than one big change\\."), (_, t) => `每晚提早 15 分鐘上床，直到 ${t}。小步調整比一次大改更容易持續。`],
+    [R("Bedtime moved DUR this week"), (_, d) => `這週就寢時間差了 ${H(d)}`],
+    [R("DUR short over (\\d+) nights"), (_, d, n) => `${n} 晚共少睡 ${H(d)}`],
+    [R("Long sleep: DUR"), (_, d) => `睡很久：${H(d)}`],
+    [R("Good night: DUR"), (_, d) => `睡得好：${H(d)}`],
+    [R("In bed by TIME, on target\\. Good sleep helps you build muscle and keep cravings down\\."), (_, t) => `${t} 上床，有達標。睡得好有助增肌，也比較不會嘴饞。`],
+    [R("Enough sleep\\. Next, try getting to bed a bit closer to TIME\\."), (_, t) => `睡眠足夠。下一步，試著再接近 ${t} 上床。`],
+    [R("target NUM(?: g)?"), (_, n) => `目標 ${n}` + (/ g$/.test(_) ? " g" : "")],
+    [R("over (\\d+) days?"), (_, n) => `超標 ${n} 天`],
+    [R("hit (\\d+) days?"), (_, n) => `達標 ${n} 天`],
+    [R("bed ~TIME"), (_, t) => `約 ${t} 上床`],
+    [R("(\\d+) short"), (_, n) => `${n} 晚睡太少`],
+    [R("(\\d+) nights?"), (_, n) => `${n} 晚`],
+    [R("(\\d+) of (\\d+) days logged"), (_, a, b) => `記錄了 ${a}/${b} 天`],
+    [R("weekends NUM vs weekdays NUM kcal"), (_, a, b) => `週末 ${a}、平日 ${b} 大卡`],
+    [R("(\\d+) weeks"), (_, n) => `${n} 次比較`],
+    [R("([\\d.]+) a week"), (_, n) => `每週 ${n} 次`],
+    [R("Only (\\d+) of (\\d+) days logged"), (_, a, b) => `${b} 天只記錄了 ${a} 天`],
+    [R("Ate above target: NUM kcal a day"), (_, k) => `吃超過目標：每天 ${k} 大卡`],
+    [R("Your target is NUM\\. You went over on (\\d+) of (\\d+) logged days\\."), (_, t, a, b) => `目標是 ${t}。有記錄的 ${b} 天中有 ${a} 天超過。`],
+    [R("Ate very little: NUM kcal a day"), (_, k) => `吃得太少：每天 ${k} 大卡`],
+    [R("That's under your resting burn \\(NUM\\)\\. Eating too little can cost muscle and stall progress\\."), (_, b) => `低於你的基礎代謝（${b}）。吃太少可能會掉肌肉，也會讓進度停滯。`],
+    [R("Calories on target: NUM a day"), (_, k) => `熱量達標：每天 ${k}`],
+    [R("Target NUM, over on (\\d+) of (\\d+) days\\."), (_, t, a, b) => `目標 ${t}，${b} 天中有 ${a} 天超過。`],
+    [R("Weekends \\+NUM kcal a day"), (_, k) => `週末每天多吃 ${k} 大卡`],
+    [R("Fri–Sun averaged NUM vs NUM on weekdays\\. A few big days can cancel a week of deficit\\."), (_, a, b) => `週五到週日平均 ${a}，平日 ${b}。幾天吃多就可能抵銷一整週的熱量赤字。`],
+    [R("Late-night eating on (\\d+) nights"), (_, n) => `有 ${n} 晚吃宵夜`],
+    [R("About NUM kcal a day logged after 9 pm\\. Late snacks are usually extra calories and can hurt sleep\\."), (_, k) => `每天約 ${k} 大卡是晚上 9 點後吃的。宵夜通常是額外的熱量，也可能影響睡眠。`],
+    [R("Low protein: NUM g a day"), (_, p) => `蛋白質太少：每天 ${p} g`],
+    [R("Target NUM g, hit on (\\d+) of (\\d+) days\\. Low protein makes it harder to keep and build muscle\\."), (_, t, a, b) => `目標 ${t} g，${b} 天中有 ${a} 天達標。蛋白質太少，就更難保住和增加肌肉。`],
+    [R("Protein a bit low: NUM g a day"), (_, p) => `蛋白質有點少：每天 ${p} g`],
+    [R("Target NUM g, hit on only (\\d+) of (\\d+) days\\. Add a protein food to the meals that miss\\."), (_, t, a, b) => `目標 ${t} g，${b} 天中只有 ${a} 天達標。在不夠的那幾餐加一份蛋白質。`],
+    [R("Protein on point: NUM g a day"), (_, p) => `蛋白質充足：每天 ${p} g`],
+    [R("Hit your NUM g target on (\\d+) of (\\d+) days\\."), (_, t, a, b) => `${b} 天中有 ${a} 天達到 ${t} g 目標。`],
+    [R("Drinks: NUM kcal"), (_, k) => `飲料：${k} 大卡`],
+    [R("(\\d+)% of everything you logged came from drinks \\(milk tea, coffee, juice\\)\\. Try less sugar \\(微糖/無糖\\) or a smaller size\\."), (_, p) => `記錄的熱量中有 ${p}% 來自飲料（奶茶、咖啡、果汁）。試試微糖、無糖或小杯。`],
+    [R("Short sleep: DUR a night"), (_, d) => `睡太少：每晚 ${H(d)}`],
+    [R("Goal DUR; (\\d+) short nights\\. Poor sleep raises hunger and slows muscle recovery\\."), (_, g, n) => `目標 ${H(g)}；有 ${n} 晚睡太少。睡不好會更容易餓，也會拖慢肌肉恢復。`],
+    [R("(\\d+) short nights"), (_, n) => `${n} 晚睡太少`],
+    [R("You averaged DUR, but (\\d+) nights were well under your DUR goal\\. Hunger and cravings usually jump the day after\\."), (_, a, n, g) => `平均睡 ${H(a)}，但有 ${n} 晚明顯少於目標 ${H(g)}。隔天通常會比較餓、比較嘴饞。`],
+    [R("Slept well: DUR a night"), (_, d) => `睡得好：每晚 ${H(d)}`],
+    [R("(\\d+) nights tracked, goal DUR\\."), (_, n, g) => `追蹤了 ${n} 晚，目標 ${H(g)}。`],
+    [R("Late to bed (\\d+) of (\\d+) nights"), (_, a, b) => `${b} 晚中有 ${a} 晚太晚上床`],
+    [R("Average bedtime TIME, target TIME\\."), (_, a, b) => `平均 ${a} 上床，目標 ${b}。`],
+    [R("Over these 11 days you averaged about NUM kcal and NUM g protein a day, close to your targets\\. In the 10 days before, you averaged NUM kcal, mostly from weekend nights, and body fat barely moved\\. The difference this time was quieter weekends and earlier bedtimes\\."),
+      (_, k, p, k0) => `這 11 天你平均每天吃約 ${k} 大卡、蛋白質 ${p} g，接近目標。前 10 天平均 ${k0} 大卡，多出來的主要是週末晚上，體脂幾乎沒動。這次的差別在於週末比較節制，也比較早睡。`],
+    [R("Protein averaged NUM g a day"), (_, p) => `蛋白質平均每天 ${p} g`],
+    [R("New targets: NUM kcal, NUM g protein"), (_, k, p) => `新目標：${k} 大卡、蛋白質 ${p} g`],
+    [R("Automatic targets: NUM kcal"), (_, k) => `自動目標：${k} 大卡`],
+    [R("Logged NUM kcal"), (_, k) => `已記錄 ${k} 大卡`],
+    [R("Logged (.+)"), (_, n) => `已記錄 ${tr(n)}`],
+    [R("Sleep saved: DUR"), (_, d) => `睡眠已儲存：${H(d)}`],
+    [R("Applied (\\d+) changes"), (_, n) => `已套用 ${n} 項改變`],
+    [R("Applied (\\d+)\\. (\\d+) couldn't be used\\."), (_, a, b) => `已套用 ${a} 項，${b} 項無法使用。`],
+    [R("Goals saved: DUR a night, bed by TIME"), (_, d, t) => `目標已儲存：每晚 ${H(d)}，${t} 前上床`],
+    [R("Hi (.+)! This phone now logs your meals\\."), (_, n) => `嗨 ${n}！這支手機現在會記錄你的餐點。`],
+    [R("Welcome, (.+)! Your targets are ready\\."), (_, n) => `歡迎，${n}！你的目標已經設定好了。`],
+    [R("(?:Total )?NUM kcal · P NUM · C NUM · F NUM g(?: · at TIME)?"), (m, k, p, c, f, t) => `${m.startsWith("Total") ? "總共 " : ""}${k} 大卡 · 蛋白質 ${p} · 碳水 ${c} · 脂肪 ${f} g${t ? ` · ${t}` : ""}`],
+    [R("(.+): NUM kcal, P NUM g"), (_, n, k, p) => `${tr(n)}：${k} 大卡，蛋白質 ${p} g`],
+    [R("Calories (.+) kcal"), (_, v) => `熱量 ${v} 大卡`],
+    [R("Protein (.+) g"), (_, v) => `蛋白質 ${v} g`],
+    [R("Carbs (.+) g"), (_, v) => `碳水 ${v} g`],
+    [R("Fat (.+) g"), (_, v) => `脂肪 ${v} g`],
+    [R("Bedtime target: (.+)"), (_, v) => `就寢目標：${v}`],
+    [R("Sleep each night: (.+)"), (_, v) => `每晚睡眠：${H(v)}`],
+    [R("Log food(?: for (.+?))?(?: on (.+))?"), (_, p, d) => "記錄食物" + (p ? `（${p}）` : "") + (d ? `（${D(d)}）` : "")],
+    [R("Add check-in for (.+?)(?: \\((.+)\\))?"), (_, d, p) => `新增 ${D(d)} 的測量` + (p ? `（${p}）` : "")],
+    [R("(Weight|Fat mass|Fat-free mass|Body fat|Visceral|BMR|Score) (.+)"), (_, k, v) => `${{ Weight: "體重", "Fat mass": "體脂肪重", "Fat-free mass": "除脂體重", "Body fat": "體脂率", Visceral: "內臟脂肪", BMR: "基礎代謝", Score: "分數" }[k]} ${K(v)}`],
+    [R("Raised to NUM kcal, the safe minimum for you \\(about your resting burn\\)\\."), (_, k) => `已提高到 ${k} 大卡，這是你的安全下限（約等於基礎代謝）。`],
+  ];
+  const src = (s) => { const m = /^InBody \((.+)\)$/.exec(s); if (m) return `InBody（${D(m[1])}）`; if (s === "lean mass (Katch-McArdle)") return "除脂體重（Katch-McArdle 公式）"; if (s === "height, weight & age (Mifflin-St Jeor)") return "身高、體重和年齡（Mifflin-St Jeor 公式）"; return s; };
+
+  /* ---------- translate one string ---------- */
+  const cache = new Map();
+  function core(s) {
+    if (FOOD.has(s)) return FOOD.get(s);
+    if (!ZH) return s;
+    if (Object.prototype.hasOwnProperty.call(EX, s)) return EX[s];
+    for (const [re, fn] of PAT) { const m = re.exec(s); if (m) return fn(...m); }
+    if (s.includes(" · ")) { const parts = s.split(" · "); const out = parts.map((p) => core(p.trim()) ); if (out.some((o, i) => o !== parts[i].trim())) return out.join(" · "); }
+    if (/^(Sun|Mon|Tue|Wed|Thu|Fri|Sat), |\b(Jan|Feb|Mar|Apr|May|Jun|Jul|Aug|Sep|Oct|Nov|Dec) \d/.test(s)) return H(K(MD(s)));
+    if (/^[\d,.]+ ?kcal$/.test(s) || /^\d+ h( \d+ m)?$|^\d+ m$/.test(s)) return H(K(s));
+    if (/\d ?kcal\b/.test(s) && !/[a-jl-z]{3,}/i.test(s.replace(/kcal/g, ""))) return K(s);
+    return s;
+  }
+  function tr(raw) {
+    if (raw == null) return raw;
+    const s = String(raw);
+    if (!/[A-Za-z\u4e00-\u9fff]/.test(s)) return s;
+    const t = s.trim();
+    if (!t) return s;
+    let out = cache.get(t);
+    if (out === undefined) { out = core(t); cache.set(t, out); }
+    if (out === t) return s;
+    return s.slice(0, s.indexOf(t)) + out + s.slice(s.indexOf(t) + t.length);
+  }
+  window.__tr = tr;
+  const svgDate = (s) => { const m = /^(Jan|Feb|Mar|Apr|May|Jun|Jul|Aug|Sep|Oct|Nov|Dec) (\d{1,2})$/.exec(s.trim()); return m ? `${MON.indexOf(m[1]) + 1}/${m[2]}` : null; };
+
+  /* ---------- markup that needs reordering (Chinese word order) ---------- */
+  const HTML_RULES = ZH ? [
+    [".fuel-side > div", [[/^<b>([^<]*)<\/b> eaten$/, "已攝取 <b>$1</b>"], [/^<b>([^<]*)<\/b> target$/, "目標 <b>$1</b>"]]],
+    [".ideas-head .txt", [[/^<b>([\d,]+) kcal<\/b> and <b>([\d,]+) g protein<\/b> left\. Not sure what to eat\?$/, "還剩 <b>$1 大卡</b>和 <b>$2 g 蛋白質</b>，不知道要吃什麼嗎？"]]],
+    [".sleep-card.night .sl-sub", [[/^Bed by <b>(\d\d:\d\d)<\/b>, (.+?) from now\.(?: That's (.+)\.)?$/, (_, t, d, why) => `請在 <b>${t}</b> 前上床，還有 ${H(d)}。${why ? whyZh(why) : ""}`]]],
+    [".sc-tonight span", [[/^Tonight, aim for bed by <b>(\d\d:\d\d)<\/b>\.$/, "今晚目標 <b>$1</b> 前上床。"]]],
+    [".rec .r-main", [
+      [/^Keep <b>([\d,]+) kcal<\/b> and <b>([\d,]+ g)<\/b> protein a day\./, "維持每天 <b>$1 大卡</b>、蛋白質 <b>$2</b>。"],
+      [/^Change to <b>([\d,]+) kcal<\/b> \(([^)]*)\) and <b>([\d,]+ g)<\/b> protein a day\./, "改成每天 <b>$1 大卡</b>（$2）、蛋白質 <b>$3</b>。"]]],
+    [".coach-intro > div", [[/^Ask me anything about food, fat loss, muscle or sleep\. I can see your targets, food log, InBody check-ins and sleep\. I can also log food or change your targets and goals\. Nothing changes until you tap <b>Apply<\/b>\.$/,
+      "問我任何關於飲食、減脂、肌肉或睡眠的問題。我看得到你的目標、飲食紀錄、InBody 和睡眠資料，也能幫你記錄食物、調整目標。在你按下<b>套用</b>之前，什麼都不會改變。"]]],
+    [".banner > div", [
+      [/^Adding to <b>(.+?)<\/b>'s log for (.+)\.$/, (_, p, d) => `加到 <b>${p}</b> 的紀錄（${D(d)}）。`],
+      [/^Adding to <b>(.+?)<\/b>\.$/, (_, d) => `加到 <b>${D(d)}</b>。`],
+      [/^Saving to <b>(.+?)<\/b>'s progress\.$/, "存到 <b>$1</b> 的進度。"],
+      [/^Editing <b>(.+?)<\/b>'s sleep\.$/, "編輯 <b>$1</b> 的睡眠。"],
+      [/^<b>New product \((.+?)\)\.<\/b> Add its nutrition label once\. Next time, scanning logs it instantly\.$/, "<b>新商品（$1）。</b>先加一次營養標示，下次掃描就能立刻記錄。"],
+      [/^(.+?) is set up: sleep arrives (from Mi Fitness \/ Apple Health|from phone use)\.$/, (_, p, w) => `${p} 已設定好：睡眠資料${w.startsWith("from Mi") ? "來自 Mi Fitness／Apple 健康" : "根據手機使用推估"}。`],
+      [/^<b>This is your first InBody\.<\/b> Next time, this page compares the two tests and shows what in your food and sleep made the difference\.$/, "<b>這是你第一次 InBody。</b>下次這裡會比較兩次測量，告訴你飲食和睡眠中是什麼造成了差異。"],
+    ]],
+  ] : [];
+  function whyZh(w) {
+    if (w === "your bedtime target") return "這是你的就寢目標。";
+    let m = /^to get (.+) before your usual (\d\d:\d\d) wake-up$/.exec(w);
+    if (m) return `這樣在平常 ${m[2]} 起床前，能睡滿 ${H(m[1])}。`;
+    m = /^15 minutes early to pay back this week's (.+) of missing sleep$/.exec(w);
+    if (m) return `提早 15 分鐘，補回這週少睡的 ${H(m[1])}。`;
+    return w + "。";
+  }
+  /* long instruction lists: replaced whole */
+  const BLOCKS = ZH ? [
+    ["ol.steps", "In Claude, open Two Plates and tap Share.", `<li>在 Claude 打開 Two Plates，點<b>分享</b>。用朋友的 email 邀請他成為<b>編輯者</b>，這樣他才能記錄自己的餐點。不要開啟公開連結分享。</li><li>在朋友的 iPhone 上用 <b>Safari</b> 打開邀請連結，登入 Claude（免費帳號就可以）。</li><li>點<b>分享</b>按鈕，再點<b>加入主畫面</b>。你的手機也一樣。</li><li>打開 App，點<b>更換這支手機的使用者</b>，再點<b>我是新成員</b>，建立朋友的個人資料。</li>`],
+    ["p.ink2", "An app opened in Safari can't see your phone use", `在 Safari 打開的 App 看不到你的手機使用情況，也讀不到 Apple 健康，但 iPhone 內建的<b>捷徑</b> App 可以。每支手機只要設定一次，之後從新的主畫面圖示打開 Two Plates，就會帶入昨晚的睡眠。`],
+    ["ol.steps", "Send sleep to Apple Health.", `<li><b>把睡眠傳到 Apple 健康。</b>在 Mi Fitness 打開<b>我的</b> → <b>第三方資料</b> → <b>Apple 健康</b>，開啟並允許<b>睡眠</b>。隔天早上，確認「健康」→「瀏覽」→「睡眠」有你昨晚的睡眠。</li><li>打開<b>捷徑</b>，點 <b>+</b>，再點上方的名稱 → <b>重新命名</b> → <b>Two Plates</b>。</li><li>搜尋<b>尋找健康樣本</b>並加入。點<b>類型</b> → <b>睡眠分析</b>。第一個篩選條件設為<b>開始日期</b> · <b>在過去 2 天內</b>。點<b>加入篩選條件</b> → <b>結束日期</b> → <b>是今天</b>。不要加「來源」篩選，名稱常常對不上。排序選<b>開始日期</b>，順序選<b>最舊的優先</b>。</li><li>加入<b>從列表取得項目</b> → <b>第一個項目</b>。點藍色的輸入欄，選健康樣本的<b>開始日期</b>，讓它變成<b>從開始日期取得第一個項目</b>。加入<b>格式化日期</b> → 日期格式選<b>自訂</b>，格式字串 <code>yyyyMMddHHmm</code>。加入<b>設定變數</b>，命名為 <code>Bed</code>。</li><li>加入<b>從列表取得項目</b> → <b>最後一個項目</b>。點藍色的輸入欄 → <b>選擇變數</b> → 點第一個動作的<b>健康樣本</b>，再點一次這個字，選<b>結束日期</b>，讓它變成<b>從結束日期取得最後一個項目</b>。加入<b>格式化日期</b> → 自訂，<code>yyyyMMddHHmm</code>。加入<b>設定變數</b>，命名為 <code>Wake</code>。</li><li>加入 <b>URL</b>。貼上你的連結，輸入 <code>#sleep-</code>，插入 <b>Bed</b> 變數，輸入 <code>-</code>，再插入 <b>Wake</b>。</li><li>加入<b>打開 URL</b>。點 <b>▶</b> 測試並允許取用健康資料，然後點名稱 → <b>加入主畫面</b>。</li>`],
+    ["p.muted", "Open Mi Fitness first in the morning so it syncs", `早上先打開 Mi Fitness 讓它同步，再從新圖示打開 Two Plates。沒時間設定？在睡眠編輯畫面用<b>從截圖讀取</b>也可以。`],
+    ["ol.steps", "In Shortcuts, go to Automation → + → App.", `<li>在<b>捷徑</b>點<b>自動化</b> → <b>+</b> → <b>App</b>。</li><li>點<b>選擇</b>，挑最常用的 App，例如 LINE、Instagram、Safari、YouTube、訊息和 TikTok，挑越多越準。勾選<b>已打開</b>和<b>已關閉</b>。</li><li>選<b>立即執行</b>，關閉<b>執行時通知</b>。點<b>下一步</b> → <b>新增空白自動化操作</b>。</li><li>加入<b>格式化日期</b>：日期選<b>目前日期</b>，日期格式選<b>自訂</b>，格式字串 <code>MMddHHmm</code>。</li><li>加入<b>文字</b>：插入<b>格式化的日期</b>，後面直接打一個點 <code>.</code>。</li><li>加入<b>附加到文字檔案</b>：把<b>文字</b>附加到檔案路徑 <code>twoplates-log.txt</code>，關閉<b>建立新行</b>。</li>`],
+    ["ol.steps", "In Shortcuts, tap + and name it", `<li>在<b>捷徑</b>點 <b>+</b>，命名為 <b>Two Plates Sleep</b>。</li><li>加入<b>取得檔案</b>：關閉<b>顯示文件選擇器</b>，檔案路徑 <code>twoplates-log.txt</code>，關閉<b>找不到時顯示錯誤</b>。</li><li>加入 <b>URL</b>：貼上你的連結，輸入 <code>#use-</code>，再插入<b>檔案</b>。</li><li>加入<b>打開 URL</b>。</li><li>加入只含 <code>0</code> 的<b>文字</b>。加入<b>儲存檔案</b>：關閉<b>詢問儲存位置</b>，路徑 <code>twoplates-log.txt</code>，開啟<b>覆寫現有檔案</b>。</li><li>點 <b>▶</b> 測試，Two Plates 會打開。第一天會說還找不到睡眠，這是正常的。</li>`],
+    ["ol.steps", "In Shortcuts, go to Automation → + → Alarm", `<li>在<b>捷徑</b>點<b>自動化</b> → <b>+</b> → <b>鬧鐘</b> → <b>已停止</b>（如果不用鬧鐘，選<b>每日時間</b> → <b>10:00</b>、<b>每天</b>）。</li><li>選<b>立即執行</b>，再選 <b>Two Plates Sleep</b> 捷徑。</li>`],
+  ] : [];
+
+  /* ---------- applying it to the page ---------- */
+  const SKIP = new Set(["SCRIPT", "STYLE", "TEXTAREA", "INPUT", "CODE", "SELECT", "OPTION"]);
+  const ATTRS = ["placeholder", "aria-label", "title", "alt"];
+  const skipEl = (el) => !el || SKIP.has(el.nodeName) || (el.closest && el.closest(".bub, code, .tp-keep"));
+  function applyRules(root) {
+    if (!ZH || root.nodeType !== 1) return;
+    for (const [sel, rules] of HTML_RULES) {
+      const els = root.matches && root.matches(sel) ? [root, ...root.querySelectorAll(sel)] : root.querySelectorAll(sel);
+      for (const el of els) {
+        const html = el.innerHTML.trim();
+        for (const [re, rep] of rules) { if (re.test(html)) { el.innerHTML = html.replace(re, rep); break; } }
+      }
+    }
+    for (const [sel, start, html] of BLOCKS) {
+      const els = root.matches && root.matches(sel) ? [root, ...root.querySelectorAll(sel)] : root.querySelectorAll(sel);
+      for (const el of els) if (el.textContent.trim().startsWith(start)) el.innerHTML = html;
+    }
+  }
+  function textNode(n) {
+    const p = n.parentNode;
+    if (!p || skipEl(p)) return;
+    const v = n.nodeValue;
+    let out;
+    if (ZH && p.namespaceURI === "http://www.w3.org/2000/svg") out = svgDate(v) || tr(v);
+    else out = tr(v);
+    if (out !== v) n.nodeValue = out;
+  }
+  function attrs(el) {
+    if (skipEl(el) && !(el.nodeName === "INPUT" || el.nodeName === "TEXTAREA")) return;
+    if (el.closest && el.closest(".bub")) return;
+    for (const a of ATTRS) { const v = el.getAttribute(a); if (v) { const o = tr(v); if (o !== v) el.setAttribute(a, o); } }
+    if (ZH && el.classList.contains("sug") && el.dataset.q) { const o = tr(el.dataset.q); if (o !== el.dataset.q) el.dataset.q = o; }
+  }
+  function walk(root) {
+    if (root.nodeType === 3) { textNode(root); return; }
+    if (root.nodeType !== 1 || skipEl(root) && !(root.nodeName === "INPUT" || root.nodeName === "TEXTAREA")) { if (root.nodeType === 1) attrs(root); return; }
+    applyRules(root);
+    attrs(root);
+    const it = document.createTreeWalker(root, NodeFilter.SHOW_ELEMENT | NodeFilter.SHOW_TEXT);
+    let n;
+    while ((n = it.nextNode())) { if (n.nodeType === 3) textNode(n); else attrs(n); }
+  }
+  function profileLang() {
+    const v = document.getElementById("view-profile");
+    if (!v || v.hidden || !v.firstElementChild || v.querySelector(".tp-lang")) return;
+    v.insertAdjacentHTML("beforeend", `<section class="card tp-lang tp-keep" style="display:flex;flex-direction:column;gap:10px"><div class="chart-head" style="margin:0"><h3>語言 · Language</h3></div>${langSeg()}</section>`);
+  }
+  let busy = false;
+  const mo = new MutationObserver((list) => {
+    if (busy) return;
+    busy = true;
+    try {
+      for (const m of list) {
+        if (m.type === "childList") m.addedNodes.forEach(walk);
+        else if (m.type === "characterData") textNode(m.target);
+        else if (m.type === "attributes") attrs(m.target);
+      }
+      profileLang();
+    } finally { busy = false; mo.takeRecords(); }
+  });
+  walk(document.body);
+  profileLang();
+  mo.observe(document.body, { childList: true, subtree: true, characterData: true, attributes: true, attributeFilter: ATTRS });
+  if (ZH) document.title = "Two Plates（展示版）";
+})();
+</script>
+<script>
+/* Two Plates public demo: "Demo" badge in the header and a welcome card on the first visit (Chinese or English). */
+(() => {
+  "use strict";
+  const ZH = window.TP_LANG !== "en";
   const embedded = window.self !== window.top || /[?&]embed\b/.test(location.search);
   if (embedded) document.documentElement.classList.add("tp-embed");
   const brand = document.querySelector(".brand");
-  if (brand) brand.insertAdjacentHTML("beforeend", '<button class="demo-chip" type="button" data-demo="open" aria-haspopup="dialog">Demo</button>');
+  if (brand) brand.insertAdjacentHTML("beforeend", `<button class="demo-chip tp-keep" type="button" data-demo="open" aria-haspopup="dialog">${ZH ? "展示版" : "Demo"}</button>`);
+  const seg = window.__tpLangSeg ? window.__tpLangSeg() : "";
+  const T = ZH ? {
+    lead: "我為自己和想好好照顧健康的朋友們做的熱量、InBody 和睡眠追蹤 App。我每天都用 iPhone 記錄。",
+    note: "這是公開展示版，裡面是兩位虛構朋友 Jun 和 Mei 的範例資料，你做的改動只會存在這個瀏覽器。這裡的 AI 回答是事先寫好的範例；在真正的 App 裡，Claude 會讀取你的照片，並根據你自己的資料給建議。",
+    tryT: "試試看",
+    tries: ["點 <b>+</b>，選<b>文字描述</b>，輸入「雞腿便當和一杯珍奶」", "打開<b>進度</b>，看六週的 InBody 結果", "打開<b>教練</b>，點一個問題"],
+    ios: "在 iPhone 上點<b>分享</b>，再點<b>加入主畫面</b>，就能像 App 一樣打開。",
+    go: "開始體驗", code: "GitHub 原始碼", reset: "重設範例資料", resetting: "重設中…", by: "Kaixin 製作 · 2026",
+  } : {
+    lead: "A calorie, InBody and sleep tracker I built for me and my friends who want to take care of their health. I use it every day on my iPhone.",
+    note: "This is a public demo. It's filled with sample data for two made-up friends, Jun and Mei, and anything you change stays in this browser. The AI answers here are pre-written examples; in the real app, Claude reads your photos and writes the coaching from your own data.",
+    tryT: "Try this",
+    tries: ["Tap <b>+</b>, then <b>Describe it</b>, and type “chicken bento and a bubble tea”", "Open <b>Progress</b> to see six weeks of InBody results", "Open <b>Coach</b> and tap one of the questions"],
+    ios: "On an iPhone, tap <b>Share</b> then <b>Add to Home Screen</b> to open it like an app.",
+    go: "Start exploring", code: "Code on GitHub", reset: "Reset sample data", resetting: "Resetting…", by: "Built by Kaixin · 2026",
+  };
 
   const ov = document.createElement("div");
-  ov.className = "demo-ov";
+  ov.className = "demo-ov tp-keep";
   ov.hidden = true;
   ov.innerHTML = `<div class="demo-card" role="dialog" aria-modal="true" aria-labelledby="demo-t" tabindex="-1">
-    <div class="demo-head"><svg class="demo-mark" viewBox="0 0 24 24" aria-hidden="true"><circle cx="9" cy="12" r="7" fill="none" stroke="var(--accent)" stroke-width="2.2"/><circle cx="15" cy="12" r="7" fill="none" stroke="var(--protein)" stroke-width="2.2"/></svg><h2 id="demo-t">Two Plates</h2></div>
-    <p class="demo-lead">A calorie, InBody and sleep tracker I built for my girlfriend and me. We use it every day on our iPhones.</p>
-    <p class="demo-note">This is a public demo. It's filled with sample data for two made-up people, Jun and Mei, and anything you change stays in this browser. The AI answers here are pre-written examples; in the real app, Claude reads your photos and writes the coaching from your own data.</p>
-    <div><b class="demo-sub">Try this</b>
-    <ol class="demo-try">
-      <li>Tap <b>+</b>, then <b>Describe it</b>, and type “chicken bento and a bubble tea”</li>
-      <li>Open <b>Progress</b> to see six weeks of InBody results</li>
-      <li>Open <b>Coach</b> and tap one of the questions</li>
-    </ol></div>
-    <p class="demo-ios">On an iPhone, tap <b>Share</b> then <b>Add to Home Screen</b> to open it like an app.</p>
-    <button class="btn block" type="button" data-demo="close">Start exploring</button>
-    <div class="demo-links"><a href="https://github.com/itspudding4/two-plates" rel="noopener">Code on GitHub</a><button type="button" data-demo="reset">Reset sample data</button></div>
-    <p class="demo-by">Built by Kaixin · 2026</p>
+    <div class="demo-head"><svg class="demo-mark" viewBox="0 0 24 24" aria-hidden="true"><circle cx="9" cy="12" r="7" fill="none" stroke="var(--accent)" stroke-width="2.2"/><circle cx="15" cy="12" r="7" fill="none" stroke="var(--protein)" stroke-width="2.2"/></svg><h2 id="demo-t">Two Plates</h2>${seg}</div>
+    <p class="demo-lead">${T.lead}</p>
+    <p class="demo-note">${T.note}</p>
+    <div><b class="demo-sub">${T.tryT}</b>
+    <ol class="demo-try">${T.tries.map((x) => `<li>${x}</li>`).join("")}</ol></div>
+    <p class="demo-ios">${T.ios}</p>
+    <button class="btn block" type="button" data-demo="close">${T.go}</button>
+    <div class="demo-links"><a href="https://github.com/itspudding4/two-plates" rel="noopener">${T.code}</a><button type="button" data-demo="reset">${T.reset}</button></div>
+    <p class="demo-by">${T.by}</p>
   </div>`;
   document.body.appendChild(ov);
 
@@ -4294,7 +4814,7 @@ boot();
     const a = b.dataset.demo;
     if (a === "open") open();
     else if (a === "close") close();
-    else if (a === "reset") { b.textContent = "Resetting…"; b.disabled = true; window.__demoReset && window.__demoReset(); }
+    else if (a === "reset") { b.textContent = T.resetting; b.disabled = true; window.__demoReset && window.__demoReset(); }
   });
   ov.addEventListener("click", (e) => { if (e.target === ov) close(); });
   document.addEventListener("keydown", (e) => { if (e.key === "Escape" && !ov.hidden) { e.stopPropagation(); close(); } }, true);

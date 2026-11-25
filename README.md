@@ -1,13 +1,17 @@
 # Two Plates
 
-A calorie, body-composition (InBody) and sleep tracker for two people. I built it for my girlfriend and me: we both want to lose fat and build muscle, and we use it every day on our iPhones.
+A calorie, body-composition (InBody) and sleep tracker for a group of friends. I built it for me and my friends who want to take care of their health: lose fat, build muscle and keep each other on track. I use it every day on my iPhone.
 
 **Try the demo:** https://itspudding4.github.io/two-plates/
 
-The demo is the real app running with sample data for two made-up people, Jun and Mei. Nothing you do there is sent anywhere; it stays in your browser.
+**中文簡介：** Two Plates 是我為自己和想好好照顧健康的朋友們做的熱量、InBody 和睡眠追蹤手機 App。大家記錄自己的餐點和 InBody 結果，看得到彼此的進度，互相督促。展示版預設為繁體中文，可以切換成英文。
+
+The demo opens in Traditional Chinese. Switch to English with the 中文 / English button on the laptop page, in the welcome card or at the bottom of the Profile tab, or open https://itspudding4.github.io/two-plates/?lang=en.
+
+The demo is the real app running with sample data for two made-up friends, Jun and Mei. Nothing you do there is sent anywhere; it stays in your browser.
 
 <p>
-<img src="screenshots/today.png" width="200" alt="Today screen: calories left, protein, carbs and fat, partner's day">
+<img src="screenshots/today.png" width="200" alt="Today screen: calories left, protein, carbs and fat, a friend's day">
 <img src="screenshots/log-food.png" width="200" alt="Logging a meal described in words">
 <img src="screenshots/progress.png" width="200" alt="Progress: InBody comparison of fat and muscle">
 <img src="screenshots/coach.png" width="200" alt="Coach chat proposing a food entry with Apply and No thanks buttons">
@@ -15,17 +19,17 @@ The demo is the real app running with sample data for two made-up people, Jun an
 
 ## Why I made it
 
-- Most tracking apps are for one person. We wanted one place where we can see each other's day and keep each other on track.
+- Most tracking apps are for one person. I wanted one place where friends can see each other's day and keep each other on track.
 - Other apps don't read InBody result sheets, and they don't know Taiwanese food: bento boxes, 7-Eleven meals, bubble tea.
 - I don't have a Mac, so I couldn't build a native iOS app. Instead I built a web app that you add to the iPhone home screen and use like a normal app, with no App Store needed.
 
 ## What it does
 
-- **Log food fast:** snap a photo of the meal or describe it in words, and AI estimates calories, protein, carbs and fat. You can also scan a barcode (the first scan reads the nutrition label and saves it for both of us), use quick add, or tap a saved meal.
-- **Today:** calories and macros left for the day, your partner's progress, last night's sleep, and meal ideas that fit what's left.
+- **Log food fast:** snap a photo of the meal or describe it in words, and AI estimates calories, protein, carbs and fat. You can also scan a barcode (the first scan reads the nutrition label and saves it for everyone), use quick add, or tap a saved meal.
+- **Today:** calories and macros left for the day, your friends' progress, last night's sleep, and meal ideas that fit what's left.
 - **InBody check-ins:** photograph the result sheet and the AI reads every number. You confirm them before saving.
 - **Progress:** weight, body fat, muscle and fat-mass trends, calories and protein for the last 14 days, and sleep.
-- **Week in review:** after each new InBody test, the app compares the change with what we ate and how we slept since the previous test, and points out what helped and what held us back (weekend eating, late-night snacks, low protein, sugary drinks, short sleep).
+- **Week in review:** after each new InBody test, the app compares the change with what you ate and how you slept since the previous test, and points out what helped and what held you back (weekend eating, late-night snacks, low protein, sugary drinks, short sleep).
 - **Coach chat:** ask anything about food, fat loss, muscle or sleep. The coach sees your real data and can propose changes (log a meal, change targets, change sleep goals), shown as cards. Nothing changes until you tap **Apply**, and you can undo it.
 - **Sleep:** an iPhone Shortcut sends last night's sleep from Apple Health (from a Xiaomi band through Mi Fitness) to the app, so nobody has to type it.
 - **Safe targets:** daily calories and protein come from the InBody BMR (or the Katch-McArdle / Mifflin-St Jeor formulas), activity level and pace. Neither the app nor the AI can set calories below a safe minimum.
@@ -33,19 +37,19 @@ The demo is the real app running with sample data for two made-up people, Jun an
 ## How it works on a phone
 
 - Open the link in Safari, tap **Share**, then **Add to Home Screen**. It gets its own icon and opens full screen like an app.
-- Everything is laid out for one hand: one column, a switcher at the top for "my day / her day", and a bottom tab bar (Today · Progress · + · Coach · Profile) with a big + button for logging.
+- Everything is laid out for one hand: one column, a switcher at the top for "my day / a friend's day", and a bottom tab bar (Today · Progress · + · Coach · Profile) with a big + button for logging.
 - It fits around the iPhone notch and home bar, works on small screens (tested down to 340 px wide) and has a dark mode.
 - The photo, barcode and InBody features use the phone's camera through the normal photo picker.
 
 ## How it's built
 
 - One page of HTML, CSS and plain JavaScript, no framework. The source is split into modules in [`source/src`](source/src): `core.js` (data, targets, sleep math), `render.js` (screens and charts), `sheets.js` (pop-up screens and AI prompts), `review.js` (week in review), `coach.js` (coach chat) and `main.js` (buttons, syncing, startup). [`source/build.js`](source/build.js) joins them into one file.
-- The real app is hosted as a Claude artifact, which gives it a shared database (so both phones see the same data) and Claude for the AI features. There's no server to run and no API key to pay for: the AI runs on each person's own Claude account.
+- The real app is hosted as a Claude artifact, which gives it a shared database (so everyone's phones see the same data) and Claude for the AI features. There's no server to run and no API key to pay for: the AI runs on each person's own Claude account.
 - Charts are hand-drawn SVG; barcodes are decoded with ZXing.
-- I tested it with automated browser tests (Playwright). [`tests/demo-test.js`](tests/demo-test.js) checks this demo on a phone-sized screen: every tab, all the ways of logging food, an InBody check-in, the coach, dark mode on a narrow screen and the laptop page.
-- Built over 15 versions in October 2026. Each version came from what we noticed using it on our own phones.
+- I tested it with automated browser tests (Playwright). [`tests/demo-test.js`](tests/demo-test.js) checks this demo on a phone-sized screen in both languages: every tab, all the ways of logging food, an InBody check-in, the coach, switching languages, dark mode on a narrow screen and the laptop page.
+- Built over 15 versions in October 2026. Each version came from what I noticed using it every day on my phone.
 
-**My role:** I came up with the idea and the features, made the design decisions (a web app instead of a native app, a coach that asks before changing anything, Taiwan-specific food knowledge), tested every version on my iPhone with our real data and set up the Apple Health sleep link. I built it with an AI coding assistant (Claude), which wrote most of the code from my specifications while I directed, reviewed and tested it.
+**My role:** I came up with the idea and the features, made the design decisions (a web app instead of a native app, a coach that asks before changing anything, Taiwan-specific food knowledge), tested every version on my iPhone with my real data and set up the Apple Health sleep link. I built it with an AI coding assistant (Claude), which wrote most of the code from my specifications while I directed, reviewed and tested it.
 
 ## About this demo
 
@@ -53,7 +57,7 @@ The real app needs Claude for its database and AI, so this public copy runs with
 
 | | Real app | This demo |
 |---|---|---|
-| Data | Shared between our two phones | Sample data, saved only in your browser |
+| Data | Shared between everyone's phones | Sample data, saved only in your browser |
 | Photo, InBody and label reading | Claude reads the actual photo | Sample results (type what's in the photo in the note box and it uses that) |
 | Describe a meal | Claude understands any description | A built-in list of about 40 common foods |
 | Coach chat and week review | Written by Claude from your data | Pre-written answers filled in with your numbers |
@@ -66,7 +70,7 @@ Everything else (targets, charts, check-ins, sleep, saved foods, barcodes) is th
 - `app.html`: the demo app
 - `source/`: the real app's source code
 - `tests/demo-test.js`: the end-to-end test for the demo
-- `demo/`: the demo layer (the stand-in for Claude, the welcome card, the landing page) and `build_site.py`, which rebuilds the demo from `source/` with `python3 demo/build_site.py`
+- `demo/`: the demo layer (the stand-in for Claude, the Chinese/English translation in `i18n.js`, the welcome card, the landing page) and `build_site.py`, which rebuilds the demo from `source/` with `python3 demo/build_site.py`
 - `icons/`, `manifest.webmanifest`: home-screen icon and settings
 
 To run the demo on your own computer: open a terminal in this folder, run `python3 -m http.server 8765`, then open http://127.0.0.1:8765/.
